@@ -1,0 +1,61 @@
+body>div{
+    display:flex;
+	flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+.view1{
+    align-items: center;
+    justify-content: center;
+}
+.view2{
+    display:none;
+}
+.map_wrapper{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.map{
+	display: flex;
+	flex-wrap: wrap;
+	width: 651px;
+	border: 1px solid #555;
+}
+.map > div{
+	width: 30px;
+	height: 30px;
+	margin: 0 1px 1px 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: bold;
+	font-size: 20px;
+	/* border-top: 1px dotted #777;
+	border-left: 1px dotted #777; */
+}
+
+.map > .me::before{
+	content: '웃';
+}
+.map > .enemy::before{
+	content: '웃';
+	color: #e00;
+}
+.map > .beer::before{
+	content: '🍺';
+}
+.map > .apple::before{
+	content: '🍎';
+}
+.map > .axe::before{
+	content: '🪓';
+}
+
+.map > .shit::before{
+	content: '💩';
+}
+
+.map > .pill::before{
+	content: '💊';
+}

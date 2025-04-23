@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS Players (
+	id STRING PRIMARY KEY,
+	name TEXT,
+	hp INT DEFAULT 100,
+	is_online INT DEFAULT 0,
+	map_id INT DEFAULT 0,
+	x INT DEFAULT 0,
+	y INT DEFAULT 0,
+	inventory TEXT,
+	buffs TEXT,
+	respawn_timer INT UNSIGNED,
+	last_ping INT DEFAULT 0
+)
+
+

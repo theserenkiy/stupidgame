@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="stylesheet" href="/style.css">
+<script src="/main.js"></script>
+<script>
+window.onload = () => {
+
+    let form = document.querySelector('.view1 form');
+    form.onsubmit = async (e) => {
+        try{
+            e.preventDefault()
+            //await fetch('?qqq='+encodeURIComponent(form.querySelector('input').value))
+            document.querySelector('.view1').style.display = 'none'
+            document.querySelector('.view2').style.display = 'flex'
+        }catch(e)
+        {
+            console.log(e)
+        }
+    }
+
+	document.querySelector('.view1').style.display = 'none'
+    document.querySelector('.view2').style.display = 'flex'
+
+    let btns = [...document.querySelectorAll('.view2 .buttons button')];
+
+	let dirs = [[0,-1],[0,1],[-1,0],[1,0]]
+
+	for(let i=0; i < 4; i++)
+	{
+		btns[i].onclick = () => move(dirs[i])
+	}
+
+	let map = document.querySelector('.map');
+	document.body.onkeydown = e => {
+		const key = event.key;
+		switch (key) {
+			case "ArrowLeft":
+				move(dirs[2])
+				e.preventDefault()
+				break;
+			case "ArrowRight":
+				move(dirs[3])
+				e.preventDefault()
+				break;
+			case "ArrowUp":
+				move(dirs[0])
+				e.preventDefault()
+				break;
+			case "ArrowDown":
+				move(dirs[1])
+				e.preventDefault()
+				break;
+		}
+		
+	}
+
+	initMapColors()
+	
+	updObjects()
+}
+</script>
+<!-- penis  -->
+</head>
+<body>
+    <!-- pisda -->
+
+    <div class="view1">
+        <form action="">
+            <input type="text" name="" id="">
+            <button type="submit">Ku</button>
+        </form>
+        <!-- form -->
+    </div>
+    <div class="view2">
+        <div class="buttons">
+            <button>UP</button>
+            <button>DOWN</button>
+            <button>LEFT</button>
+            <button>RIGHT</button>
+        </div>
+		<div class="map_wrapper">
+			<div class="map">
+
+			</div>
+		</div>
+        
+        <!-- not form -->
+    </div>
+</body>
+</html>
