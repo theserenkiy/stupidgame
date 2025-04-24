@@ -20,7 +20,8 @@ def createMap(w,h):
 			map[x].append((randint(-50,50)+floor(avg)+360)%360)
 
 	print(map)
-	maps.execute('INSERT INTO maps (landscape) VALUES (?)',[json.dumps(map)])
+	maps.execute('INSERT INTO maps (w,h,landscape) VALUES (?,?,?)',[w,h,json.dumps(map)])
+
 
 
 def listMaps():

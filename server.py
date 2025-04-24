@@ -1,4 +1,4 @@
-from flask import Flask, make_response, request, send_file
+from flask import Flask, request, make_response, request, send_file
 
 import db
 
@@ -10,6 +10,16 @@ field = {}
 @app.route("/")
 def index():
     return send_file("index.html")
+
+@app.route("/api/<cmd>", methods = ["POST"])
+def runApi(cmd):
+    d = request.get_json()
+    out = {}
+    fooname = "api_"+cmd
+    loc = locals()
+    if fooname in loc:
+        loc[fooname](d,out)
+
 
 
 
