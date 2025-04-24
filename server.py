@@ -1,6 +1,7 @@
 from flask import Flask, request, make_response, request, send_file
 
 import db
+import api
 
 app = Flask(__name__)
 
@@ -13,12 +14,22 @@ def index():
 
 @app.route("/api/<cmd>", methods = ["POST"])
 def runApi(cmd):
-    d = request.get_json()
-    out = {}
-    fooname = "api_"+cmd
-    loc = locals()
-    if fooname in loc:
-        loc[fooname](d,out)
+    out = {"ok":1}
+    try:
+        print(f"API: {cmd}; JSON: {request.json}")
+        d = request.get_json(force=True)
+        if hasattr(api,cmd):
+            getattr(api,cmd)(d,out)
+        else:
+            raise Exception("Неизвестная команда API")
+    except Exception as e:
+        print(e)
+        out["ok"] = 0
+        out["error"] = str(e)
+    return make_response(out, 200)
+
+
+
 
 
 
