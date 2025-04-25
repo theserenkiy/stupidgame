@@ -18,4 +18,4 @@ for i in range(amount):
     players.execute("INSERT INTO players (id, name) VALUES (?,?)",pl)
 
 
-print(players.execute("SELECT * FROM players"))
+print(dict(players.selectOne("SELECT * FROM players LIMIT 1")))

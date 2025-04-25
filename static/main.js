@@ -1,6 +1,8 @@
-const W = 100
-const H = 100
+let W = 100
+let H = 100
 const VISIBLE_CELLS = 21;
+let player_id = 4971730
+
 const cl = console.log
 
 async function api(cmd,data={})
@@ -29,26 +31,26 @@ async function api(cmd,data={})
 }
 
 let objects = []
-let map_colors = []
+let landscape = []
 let pos = [95,95]
 
-cl({map_colors})
+cl({map_colors: landscape})
 
-function initMapColors()
-{
-	for(let x=0; x < W; x++)
-	{
-		map_colors[x] = []
-		for(let y=0; y < H; y++)
-		{
-			let avg = 0
-			if(x > 0)avg += map_colors[x-1][y]
-			if(y > 0)avg += map_colors[x][y-1]
-			if(x && y)avg /= 2;
-			map_colors[x][y] = Math.round((Math.random()*100)+avg-50)
-		}
-	}
-}
+// function initMapColors()
+// {
+// 	for(let x=0; x < W; x++)
+// 	{
+// 		map_colors[x] = []
+// 		for(let y=0; y < H; y++)
+// 		{
+// 			let avg = 0
+// 			if(x > 0)avg += map_colors[x-1][y]
+// 			if(y > 0)avg += map_colors[x][y-1]
+// 			if(x && y)avg /= 2;
+// 			map_colors[x][y] = Math.round((Math.random()*100)+avg-50)
+// 		}
+// 	}
+// }
 
 function getObjectAtCoord(x,y)
 {
@@ -68,7 +70,7 @@ function drawMap(center)
 		for(let rx=0;rx < VISIBLE_CELLS;rx++)
 		{
 			let x = rx+dx;
-			let color = (x >= 0 && y >= 0 && x < W && y < H) ? `hsl(${map_colors[x][y]} 40% 80%)` : '#fff'
+			let color = (x >= 0 && y >= 0 && x < W && y < H) ? `hsl(${landscape[x][y]} 40% 80%)` : '#fff'
 			let cls = '';
 			let o = getObjectAtCoord(x,y);
 			
@@ -83,7 +85,7 @@ function drawMap(center)
 			h += `<div style="background-color:${color}" class="${cls}"></div>`
 		}
 	}
-	document.querySelector('.map').innerHTML = h
+	document.querySelector('.map').innerHTML = h;
 }
 
 
@@ -111,4 +113,17 @@ function move(dir)
 		drawMap(pos)
 	}
 	
+}
+
+async function initBoard(id)
+{
+	let res = await api("init_board",{id,player_id})
+	W = res.w
+	H = res.h
+	landscape = JSON.parse(res.landscape)
+
+	res = await api("init_user")
+
+	drawMap([5,5])
+	cl(res)
 }

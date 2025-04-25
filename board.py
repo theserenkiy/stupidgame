@@ -9,11 +9,14 @@ def createBoard(map_id):
     res = boards.insert({"map_id":map_id, "w":m['w'], "h":m['h']})
     # print(res)
 
-def initBoard(id):
-    b = boards.selectOne("SELECT map_id,w,h FROM boards WHERE id=?",[id])
+def initBoard(id,player_id):
+    b = boards.selectOne("SELECT map_id,w,h,objects FROM boards WHERE id=?",[id])
     if not b:
         raise Exception(f"Board {id} not found")
     m = maps.selectOne("SELECT * FROM maps WHERE id=?",[b['map_id']])
+
+
+
     return {"landscape": m["landscape"], "w":b["w"], "h":b["h"]}
 
 

@@ -35,6 +35,7 @@ def listMaps(fields="*"):
 		
 
 if __name__ == "__main__":
-	createMap(100,100)
-	listMaps("id,w,h")
+	# createMap(100,100)
+	# listMaps("id,w,h")
+	print(dict(maps.selectOne("SELECT json_extract(landscape) AS ls FROM maps LIMIT 1",[])))
 	

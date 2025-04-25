@@ -10,3 +10,7 @@ def getmap(d,o):
 
 def init_board(d,o):
 	o.update(board.initBoard(d['id']))
+
+
+def generate_objects():
+	pass

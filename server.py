@@ -13,6 +13,16 @@ def index():
     return send_file("index.html")
 
 
+@app.route("/main.js")
+def main():
+    return send_file("static/main.js")
+
+
+@app.route("/style.css")
+def style():
+    return send_file("static/style.css")
+
+
 @app.route("/api/<cmd>", methods = ["POST"])
 def runApi(cmd):
     out = {"ok":1}
@@ -78,4 +88,4 @@ def runApi(cmd):
 #     return make_response({'status': 'ok', 'answer': []}, 200)
 
 
-app.run(port=5000)
+app.run(port=1235)
