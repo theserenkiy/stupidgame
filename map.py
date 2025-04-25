@@ -24,16 +24,17 @@ def createMap(w,h):
 	print(ins)
 
 def getMap(id):
-	list = maps.execute("SELECT * FROM maps WHERE id=? LIMIT 1",[id])
-	if not len(list):
+	row = maps.selectOne("SELECT * FROM maps WHERE id=? LIMIT 1",[id])
+	if not row:
 		raise Exception("Карта не найдена")
-	return list[0]
+	return row
 
 def listMaps(fields="*"):
-	rows = maps.execute(f"SELECT {fields} FROM maps")
+	rows = maps.select(f"SELECT {fields} FROM maps")
 	print(rows)
 		
 
 if __name__ == "__main__":
 	createMap(100,100)
 	listMaps("id,w,h")
+	

@@ -6,8 +6,7 @@ maps = DB('maps')
 players = DB('players')
 
 def getmap(d,o):
-    map.getMap(d.id)
-    
-    
+	o["map"] = map.getMap(d['id'])
 
-    
+def init_board(d,o):
+	o.update(board.initBoard(d['id']))

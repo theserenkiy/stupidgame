@@ -12,6 +12,7 @@ field = {}
 def index():
     return send_file("index.html")
 
+
 @app.route("/api/<cmd>", methods = ["POST"])
 def runApi(cmd):
     out = {"ok":1}
