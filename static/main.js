@@ -112,7 +112,6 @@ function move(dir)
 		pos = p
 		drawMap(pos)
 	}
-	
 }
 
 async function initBoard(id)
