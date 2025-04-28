@@ -31,6 +31,7 @@ async function api(cmd,data={})
 }
 
 let objects = []
+cl(objects)
 let landscape = []
 let pos = [95,95]
 
@@ -54,7 +55,7 @@ cl({map_colors: landscape})
 
 function getObjectAtCoord(x,y)
 {
-	let res = objects.find(v => (v.coord[0] == +x && v.coord[1] == +y)) 
+	let res = objects.find(v => (v.coord[0] == + x && v.coord[1] == + y)) 
 	return res;
 }
 
@@ -97,7 +98,7 @@ async function updObjects()
 	//cl({res})
 	if(res)objects = res.objects;
 	drawMap(pos)
-	setTimeout(updObjects,500);
+	setTimeout(updObjects, 500);
 }
 
 function move(dir)

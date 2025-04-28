@@ -26,21 +26,24 @@ def style():
 @app.route("/api/<cmd>", methods = ["POST"])
 def runApi(cmd):
     out = {"ok":1}
+    resp = ''
     try:
         print(f"API: {cmd}; JSON: {request.json}")
         d = request.get_json(force=True)
-        if hasattr(api,cmd):
-            getattr(api,cmd)(d,out)
+        print(f"d ===> {d}")
+        if hasattr(api, cmd):
+            resp = getattr(api, cmd)(d, out)
         else:
             raise Exception("Неизвестная команда API")
     except Exception as e:
         print(e)
         out["ok"] = 0
         out["error"] = str(e)
+    # print("resp === >", resp)
     return make_response(out, 200)
 
 
-
+app.run(port=2345)
 
 
 
@@ -86,6 +89,3 @@ def runApi(cmd):
 #     field[Id]['cords'] = cd
 #     print(field)
 #     return make_response({'status': 'ok', 'answer': []}, 200)
-
-
-app.run(port=1235)
