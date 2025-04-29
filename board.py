@@ -7,39 +7,68 @@ from db import DB
 from objects_cfg import objcfg
 import map
 
-boards = DB('boards')
-maps = DB('maps')
+players_db = DB("players")
+boards_db = DB('boards')
+maps_db = DB('maps')
+objects_db = DB("objects")
 
 def createBoard(map_id):
 	m = map.getMap(map_id)
-	res = boards.insert({"map_id":map_id, "w":m['w'], "h":m['h']})
-# print(res)
+	id = boards_db.insert({"map_id":map_id, "w":m['w'], "h":m['h']})
+	spawnObjects(id, m["w"], m["h"])
+	print(f"Board id: {id}")
 
-def initBoard(id,player_id):
-	b = boards.selectOne("SELECT * FROM boards WHERE id=?",[id])
+def initBoard(board_id,player_id):
+	b = boards_db.selectOne("SELECT * FROM boards WHERE id=?",[board_id])
 	if not b:
 		raise Exception(f"Board {id} not found")
-	m = maps.selectOne("SELECT * FROM maps WHERE id=?",[b['map_id']])
+	print(b)
+	m = maps_db.selectOne("SELECT * FROM maps WHERE id=?",[b['map_id']])
+	
+	objects = [dict(o) for o in objects_db.select("SELECT id,type,x,y FROM objects WHERE board_id=? AND shown=1",[board_id])]
 
-	return {"landscape": m["landscape"], "w":b["w"], "h":b["h"]}
+	mycrd = getRandCoord(getUsedCoords(board_id),b["w"],b["h"])
 
-def spawnObjects(w,h):
-	time.gmtime()
-	cells_count = w*h
-	oid = 1
+	players_db.update({
+		"x": mycrd[0],
+		"y": mycrd[1],
+		"board_id": board_id
+	},"id=?",[player_id])
+
+	return {"landscape": m["landscape"], "w":b["w"], "h":b["h"], "objects": objects, "mycrd": mycrd}
+
+def getBoardObjects(board_id):
+	pass
+
+
+def spawnObjects(board_id,w,h):
+	
+	# time.gmtime()
+	cells_count = w * h
 	objects = []
 	used_coord = []
 	for t in objcfg:
 		c = objcfg[t]
-		amount = round(cells_count*c["prob"]*0.01)
-		print(amount)
+		amount = round(cells_count * c["prob"] * 0.003)
+		# print(amount)
+		oids = []
 		for i in range(amount):
-			crd = getRandCoord(used_coord,w,h)
-			obj = (oid,t,crd,0)
-			objects.append(obj)
+			crd = getRandCoord(used_coord, w, h)
+			obj = {
+				"board_id": board_id,
+				"type": t,
+				"x": crd[0],
+				"y": crd[1],
+				"updated": 0,
+				"shown": 1,
+				"spawntime": 0
+			}
+
+			print(obj)
+			oid = objects_db.insert(obj)
+			oids.append(oid)
 			used_coord.append(crd)
-			oid += 1
-	return objects
+
 
 def getRandCoord(used_coord,w,h):
 	while True:
@@ -50,15 +79,42 @@ def getRandCoord(used_coord,w,h):
 		if crd not in used_coord:
 			return crd
 
-def respawnObjects(objects,w,h):
-	used_coord = [[o[2],o[3]] for o in objects]
-	for o in objects:
-		if o[4] < time.gmtime():
-			crd = getRandCoord(used_coord,w,h)
+
+def getUsedCoords(board_id):
+	pls = players_db.select("SELECT x,y FROM players WHERE board_id=?",[board_id])
+	used_coords_0 = [[o["x"],o["y"]] for o in pls]
+
+	objects = objects_db.select(
+		"SELECT x,y,id FROM objects WHERE board_id=? AND shown=1",
+		[board_id]
+	)
+	
+	return [[o["x"],o["y"]] for o in objects] + used_coords_0
+
+
+def respawnObjects(board_id):
+	resp_objects = objects_db.select(
+		"SELECT id FROM objects WHERE board_id=? AND shown=0 AND spawntime <= ?",
+		[board_id,time.gmtime()]
+	)
+	
+	if not len(resp_objects):
+		return
+	
+	for o in resp_objects:
+		crd = getRandCoord(getUsedCoords(board_id),w,h)
+		upd = {
+			"x": crd[0],
+			"y": crd[1],
+			"shown": 1,
+			"spawntime": 0
+		}
+		objects_db.execute(upd,"id=?",[o.id])
 		
 
 
 if __name__ == "__main__":
-	# createBoard(1)
-	spawnObjects(100,100)
+	#createBoard(1)
+	# spawnObjects(100,100)
 	# print()
+	pass

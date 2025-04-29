@@ -9,7 +9,7 @@ def getmap(d,o):
 	o["map"] = map.getMap(d['id'])
 
 def init_board(d,o):
-	o.update(board.initBoard(d['id']))
+	o.update(board.initBoard(d['id'],d['player_id']))
 
 
 def generate_objects():

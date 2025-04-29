@@ -1,4 +1,5 @@
 import sqlite3
+from util import dotdict
 
 class DB:
 
@@ -16,7 +17,7 @@ class DB:
 	
 	def selectOne(self, query, vars=[]):
 		self.cursor.execute(query, vars)
-		return self.cursor.fetchone()
+		return dotdict(dict(self.cursor.fetchone()))
 	
 	def select(self, query, vars=[]):
 		self.cursor.execute(query, vars)
@@ -31,12 +32,12 @@ class DB:
 		self.conn.commit()
 		return self.cursor.lastrowid
 	
-	def update(self, vardict, cond_id=None):
-		if not cond_id: 
+	def update(self, vardict, cond, condvars=[]):
+		if not cond: 
 			raise Exception(f"Cannot update {self.name} without condition")
 		pairs = ",".join([f"`{k}`=?" for k in vardict])
-		q = f"UPDATE {self.name} SET {pairs} WHERE id=?"
-		self.cursor.execute(q,list(vardict.values())+[cond_id])
+		q = f"UPDATE {self.name} SET {pairs} WHERE {cond}"
+		self.cursor.execute(q,list(vardict.values())+condvars)
 		self.conn.commit()
 
 	

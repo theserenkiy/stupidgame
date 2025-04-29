@@ -1,7 +1,7 @@
 let W = 100
 let H = 100
 const VISIBLE_CELLS = 21;
-let player_id = 4971730
+let PLAYER_ID = 4971730
 
 const cl = console.log
 
@@ -31,6 +31,7 @@ async function api(cmd,data={})
 }
 
 let objects = []
+let players = []
 let landscape = []
 let pos = [95,95]
 
@@ -54,7 +55,7 @@ cl({map_colors: landscape})
 
 function getObjectAtCoord(x,y)
 {
-	let res = objects.find(v => (v.coord[0] == +x && v.coord[1] == +y)) 
+	let res = objects.find(v => (v.x == +x && v.y == +y)) 
 	return res;
 }
 
@@ -116,13 +117,14 @@ function move(dir)
 
 async function initBoard(id)
 {
-	let res = await api("init_board",{id,player_id})
+	let res = await api("init_board",{id,player_id:PLAYER_ID})
 	W = res.w
 	H = res.h
 	landscape = JSON.parse(res.landscape)
+	pos = res.mycrd
+	objects = res.objects
+	// res = await api("init_user")
 
-	res = await api("init_user")
-
-	drawMap([5,5])
+	drawMap(pos)
 	cl(res)
 }

@@ -14,6 +14,7 @@
 #       2 - other 
 #   buf_time: time while the buf works, sec
 
+
 objcfg = {
     "apple":{
 		"type": "heal",
