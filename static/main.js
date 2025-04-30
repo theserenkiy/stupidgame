@@ -1,7 +1,12 @@
 let W = 100
 let H = 100
-const VISIBLE_CELLS = 21;
+const VISIBLE_CELLS = 11;
+const CELL_SIZE = 64;
+
+const INVENTORY_SLOTS = 10;
+const INVENTORY_CELL_SIZE = 80
 let PLAYER_ID = 5146213
+let timediff = 0
 
 const cl = console.log
 
@@ -32,6 +37,35 @@ async function api(cmd,data={})
 	}
 }
 
+function getServerTime()
+{
+	return Date.now()+timediff
+}
+
+function initCss()
+{
+	let invm = Math.ceil(INVENTORY_CELL_SIZE/20)
+	let invw = 2*(INVENTORY_CELL_SIZE+invm+invm+2)
+	document.querySelector('style.custom').innerHTML = `
+	.map {
+		width: ${VISIBLE_CELLS*(CELL_SIZE+1)}px;
+	}
+	.map > div {
+		width: ${CELL_SIZE}px;
+		height: ${CELL_SIZE}px;
+		font-size: ${Math.round(CELL_SIZE/2)}px;
+	}
+	.inventory {
+		width: ${invw}px;
+	}
+	.inventory > div{
+		width: ${INVENTORY_CELL_SIZE}px;
+		height: ${INVENTORY_CELL_SIZE}px;
+		margin: ${invm}px;
+	}
+	`
+}
+
 let objects = []
 let players = []
 let landscape = []
@@ -39,21 +73,6 @@ let pos = [95,95]
 
 cl({map_colors: landscape})
 
-// function initMapColors()
-// {
-// 	for(let x=0; x < W; x++)
-// 	{
-// 		map_colors[x] = []
-// 		for(let y=0; y < H; y++)
-// 		{
-// 			let avg = 0
-// 			if(x > 0)avg += map_colors[x-1][y]
-// 			if(y > 0)avg += map_colors[x][y-1]
-// 			if(x && y)avg /= 2;
-// 			map_colors[x][y] = Math.round((Math.random()*100)+avg-50)
-// 		}
-// 	}
-// }
 
 function getObjectAtCoord(x,y)
 {
@@ -118,22 +137,28 @@ function move(dir)
 	STEPNUM++
 	//cl('MOVE',dir);
 	(async () => {
-		let d = await api('move',{player_id: PLAYER_ID, dir, stepnum: STEPNUM}) 
-		//cl('POS',d.pos)
-		last_verified_stepnum = d.stepnum
-		if(d.inventory)
-		{
-			updInventory(d.inventory)
-			if(d.objects_removed)
-				removeObjects(d.objects_removed)
+		try{
+			let d = await api('move',{player_id: PLAYER_ID, dir, stepnum: STEPNUM}) 
+			//cl('POS',d.pos)
+			last_verified_stepnum = d.stepnum
+			if(d.inventory)
+			{
+				updInventory(d.inventory)
+				if(d.objects_removed)
+					removeObjects(d.objects_removed)
 
-			pos = d.pos
-			drawMap(pos)
+				pos = d.pos
+				drawMap(pos)
+			}
+			if(d.stepnum == STEPNUM && (pos[0] != d.pos[0] || pos[1] != d.pos[1]))
+			{
+				pos = d.pos
+				drawMap(pos)
+			}
 		}
-		if(d.stepnum == STEPNUM && (pos[0] != d.pos[0] || pos[1] != d.pos[1]))
+		catch(e)
 		{
-			pos = d.pos
-			drawMap(pos)
+			cl(e)
 		}
 	})()
 	
@@ -152,14 +177,31 @@ function move(dir)
 	}
 }
 
+function initInventory()
+{
+	h = ''
+	for(let i=0; i < INVENTORY_SLOTS; i++)
+	{
+		h += '<div draggable="true"><div></div></div>'
+	}
+	document.querySelector(".inventory").innerHTML = h
+}
+
 function updInventory(inv)
 {
-	let slots = [...document.querySelectorAll(".inventory div")]
+	let slots = [...document.querySelectorAll(".inventory > div")]
 	for(let i=0; i < slots.length; i++)
 	{
 		if(!inv[i])
 			break
-		slots[i].className = inv[i].type
+		let cls = inv[i].type
+		if(inv[i].items && inv[i].items.length > 1)
+		{
+			cls += ' multi'
+			slots[i].querySelector('div').innerHTML = inv[i].items.length
+		}
+			
+		slots[i].className = cls
 	}
 }
 
@@ -170,6 +212,8 @@ function removeObjects(ids)
 
 async function initGame(board_id)
 {
+	initInventory()
+
 	let res = await api("init_game",{board_id,player_id:PLAYER_ID})
 	W = res.w
 	H = res.h
@@ -181,6 +225,12 @@ async function initGame(board_id)
 		updInventory(JSON.parse(res.player.inventory))
 	// res = await api("init_user")
 
+	res = await api("timesync")
+	timediff = res.time-Date.now()
+	cl({timediff})
+
+	initCss()
+
 	drawMap(pos)
-	cl(res)
+	
 }

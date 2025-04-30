@@ -20,7 +20,8 @@ objcfg = {
 		"type": "heal",
 		"prob": 0.7,
 		"resp":	60,
-		"limit": 5,
+		"limit": 50,
+        "per_slot": 5,
 		"stats": {
 			"heal": 20
 		}
@@ -29,7 +30,8 @@ objcfg = {
 		"type": "heal",
 		"prob": 0.5,
 		"resp":	60,
-		"limit": 5,
+        "limit": 20,
+        "per_slot": 3,
 		"stats": {
 			"heal": 15
 		}

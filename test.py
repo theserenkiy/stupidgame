@@ -1,8 +1,7 @@
 
-import testc
-import test2
-import dbs
 
-testc.aaa = 567
+aaa = [{"a": 123}]*3
 
-test2.test()
+aaa[1]["a"] = 345
+
+print(aaa)

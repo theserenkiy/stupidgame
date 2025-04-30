@@ -47,7 +47,7 @@ def spawnObjects(board_id,w,h):
 	used_coord = []
 	for t in objcfg:
 		c = objcfg[t]
-		amount = round(cells_count * c["prob"] * 0.003)
+		amount = round(cells_count * c["prob"] * 0.01)
 		# print(amount)
 		oids = []
 		for i in range(amount):
@@ -84,8 +84,8 @@ def getBoardDim(id):
 	return dbs.boards.c_selectId(id,['w','h'])
 
 if __name__ == "__main__":
-	# delObjects(7)
-	createBoard(1)
-	#spawnObjects(7,100,100)
+	delObjects(1)
+	#createBoard(1)
+	spawnObjects(1,100,100)
 	# print()
 	pass

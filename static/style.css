@@ -19,18 +19,14 @@ body>div{
 .map{
 	display: flex;
 	flex-wrap: wrap;
-	width: 651px;
 	border: 1px solid #555;
 }
 .map > div{
-	width: 30px;
-	height: 30px;
 	margin: 0 1px 1px 0;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	font-weight: bold;
-	font-size: 20px;
 	/* border-top: 1px dotted #777;
 	border-left: 1px dotted #777; */
 }
@@ -83,7 +79,6 @@ body>div{
 .inventory{
 	display: flex;
 	flex-wrap: wrap;
-	width: 220px;
 	--height: 400px;
 	--border: 1px solid #777;
 	margin: 10px;
@@ -91,12 +86,31 @@ body>div{
 
 .inventory > div{
 	display: flex;
+	position: relative;
 	justify-content: center;
 	align-items: center;
 	font-size: 40px;
 	border: 1px solid #aaa;
 	border-radius: 4px;
-	width: 80px;
-	height: 80px;
-	margin: 4px;
+	cursor: pointer;
+}
+
+.inventory > div:active{
+	cursor: pointer;
+}
+
+.inventory > div.multi > div{
+	content: '3';
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
+	width: 20px;
+	height: 20px;
+	color: #fff;
+	background-color: #555;
+	border-radius: 2px;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }

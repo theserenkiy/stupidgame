@@ -1,6 +1,6 @@
 import sqlite3
 from util import dotdict
-from threading import Lock
+from threading import Lock, Timer
 import lib
 
 lock = Lock()
@@ -11,9 +11,11 @@ class DB:
 		print(f"Init database {name}")
 		self.name = name
 		self.locked = 0
+		self.need_commit = 0
 		self.conn = sqlite3.connect(f"db/{name}.db", check_same_thread=False)
 		self.conn.row_factory = sqlite3.Row
 		self.cursor = self.conn.cursor()
+		self.doCommit()
 		with open(f"sql/{name}.sql") as c:
 			self.execute(c.read())
 
@@ -36,6 +38,18 @@ class DB:
 			if not self.locked:
 				lock.release()
 	
+	def commit(self):
+		self.need_commit = 1
+
+	def doCommit(self):
+		if self.need_commit:
+			print("doCommit")
+			self.conn.commit()
+			self.need_commit = 0
+		tim = Timer(1, self.doCommit)
+		tim.start()
+		
+	
 	def selectOne(self, query, vars=[]):
 		self.execute(query, vars)
 		return dotdict(dict(self.cursor.fetchone()))
@@ -51,7 +65,7 @@ class DB:
 		value_qs = ("?,"*len(kk))[0:-1]
 		q = f"INSERT INTO `{self.name}` ({keys}) VALUES ({value_qs})"
 		self.execute(q,list(vardict.values()))
-		self.conn.commit()
+		self.commit()
 		return self.cursor.lastrowid
 	
 	def update(self, vardict, cond, condvars=[]):
@@ -61,11 +75,11 @@ class DB:
 		pairs = ",".join([f"`{k}`=?" for k in vardict])
 		q = f"UPDATE {self.name} SET {pairs} WHERE {cond}"
 		self.execute(q,list(vardict.values())+condvars)
-		self.conn.commit()
+		self.commit()
 
 	def delete(self, cond, condvars=[]):
 		self.execute(f"DELETE FROM {self.name} WHERE {cond}",condvars)
-		self.conn.commit()
+		self.commit()
 
 	def c_selectId(self,id,fields=None):
 		flist = ",".join(fields) if fields else '*'
