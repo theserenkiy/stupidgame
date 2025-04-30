@@ -35,27 +35,68 @@ body>div{
 	border-left: 1px dotted #777; */
 }
 
-.map > .me::before{
+.object::before{
+	content: 'x';
+}
+.me::before{
 	content: '웃';
 }
-.map > .enemy::before{
+.enemy::before{
 	content: '웃';
 	color: #e00;
 }
-.map > .beer::before{
+.water::before{
 	content: '🍺';
 }
-.map > .apple::before{
+.apple::before{
 	content: '🍎';
 }
-.map > .axe::before{
+.axe::before{
 	content: '🪓';
 }
 
-.map > .shit::before{
+.sword::before{
+	content: '🗡';
+}
+
+.shit::before{
 	content: '💩';
 }
 
-.map > .pill::before{
-	content: '💊';
+.knife::before{
+	content: '🔪';
+}
+
+.shield::before{
+	content: '🛡';
+}
+
+.hammer::before{
+	content: '🔨';
+}
+
+
+.me::before{
+	content: '웃';
+}
+
+.inventory{
+	display: flex;
+	flex-wrap: wrap;
+	width: 220px;
+	--height: 400px;
+	--border: 1px solid #777;
+	margin: 10px;
+}
+
+.inventory > div{
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-size: 40px;
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	width: 80px;
+	height: 80px;
+	margin: 4px;
 }

@@ -3,5 +3,6 @@ CREATE TABLE IF NOT EXISTS Boards (
 	map_id INTEGER,
 	w INT UNSIGNED DEFAULT 100,
 	h int UNSIGNED DEFAULT 100,
-	objects TEXT
+	objects TEXT,
+	updated INTEGER DEFAULT 0
 )

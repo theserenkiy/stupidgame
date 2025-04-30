@@ -1,9 +1,17 @@
 from flask import Flask, request, make_response, request, send_file
 
+globals()["cache"] = {}
+
 import db
 import api
+import traceback
 
-app = Flask(__name__)
+from os import system
+system("title STUPIDGAME")
+
+app = Flask(__name__,
+            static_url_path='', 
+            static_folder='static')
 
 field = {}
 
@@ -29,12 +37,15 @@ def runApi(cmd):
     try:
         print(f"API: {cmd}; JSON: {request.json}")
         d = request.get_json(force=True)
+        res = None
         if hasattr(api,cmd):
-            getattr(api,cmd)(d,out)
+            res = getattr(api,cmd)(d)
         else:
             raise Exception("Неизвестная команда API")
+        if res:
+            out.update(res)
     except Exception as e:
-        print(e)
+        print(e, traceback.format_exc(), f"\ncmd:{cmd}")
         out["ok"] = 0
         out["error"] = str(e)
     return make_response(out, 200)

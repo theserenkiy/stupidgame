@@ -20,6 +20,7 @@ objcfg = {
 		"type": "heal",
 		"prob": 0.7,
 		"resp":	60,
+		"limit": 5,
 		"stats": {
 			"heal": 20
 		}
@@ -28,6 +29,7 @@ objcfg = {
 		"type": "heal",
 		"prob": 0.5,
 		"resp":	60,
+		"limit": 5,
 		"stats": {
 			"heal": 15
 		}
@@ -56,7 +58,7 @@ objcfg = {
 			"damage": 10
 		}
 	},
-	"bat": {
+	"hammer": {
 		"type": "weapon",
 		"prob": 0.5,
 		"resp":	100,
@@ -64,16 +66,16 @@ objcfg = {
 			"damage": 7
 		}
 	},
-	"helmet": {
-		"type": "cloth",
-		"prob": 0.1,
-		"resp":	100,
-		"stats": {
-			"defence": 20,
-			"hp_add": 10
-		}
-	},
-	"armor": {
+	# "helmet": {
+	# 	"type": "cloth",
+	# 	"prob": 0.1,
+	# 	"resp":	100,
+	# 	"stats": {
+	# 		"defence": 20,
+	# 		"hp_add": 10
+	# 	}
+	# },
+	"shield": {
 		"type": "cloth",
 		"prob": 0.05,
 		"resp":	100,
@@ -82,14 +84,14 @@ objcfg = {
 			"hp_add": 5
 		}
 	},
-    "boots": {
-		"type": "cloth",
-		"prob": 0.05,
-		"resp":	100,
-		"stats": {
-			"defence": 10,
-			"damage_add": 10, 
-			"hp_add": 5
-		}
-	},
+    # "boots": {
+	# 	"type": "cloth",
+	# 	"prob": 0.05,
+	# 	"resp":	100,
+	# 	"stats": {
+	# 		"defence": 10,
+	# 		"damage_add": 10, 
+	# 		"hp_add": 5
+	# 	}
+	# },
 }

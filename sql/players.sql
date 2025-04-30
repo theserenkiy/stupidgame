@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS Players (
 	buffs TEXT,
 	respawn_timer INT UNSIGNED,
 	token STRING,
-	last_ping INT DEFAULT 0
+	last_ping INT DEFAULT 0,
+	updated INT DEFAULT 0
 )
 
 

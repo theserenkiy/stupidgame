@@ -15,7 +15,10 @@ for i in range(amount):
         choice(nicks)
     ]
     print(pl)
-    players.execute("INSERT INTO players (id, name) VALUES (?,?)",pl)
+    players.insert({
+        "id":randint(1000000,9999999),
+        "name":choice(nicks)
+    })
 
 
 print(dict(players.selectOne("SELECT * FROM players LIMIT 1")))

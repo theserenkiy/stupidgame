@@ -1,16 +1,22 @@
 from db import DB
 import map
 import board
+import player
+import lib
 
-maps = DB('maps')
-players = DB('players')
+def timesync(d):
+	return {"time": lib.time_ms()}
 
-def getmap(d,o):
-	o["map"] = map.getMap(d['id'])
+def getmap(d):
+	return {"map": map.getMap(d['id'])}
 
-def init_board(d,o):
-	o.update(board.initBoard(d['id'],d['player_id']))
+def init_game(d):
+	out = board.initBoard(d['board_id'],d['player_id'])
+	out["player"] = player.getPlayer(d['player_id'])
+	return out
 
+def move(d):
+	return {"stepnum":d["stepnum"], **player.move(d["player_id"],d["dir"])}
 
 def generate_objects():
 	pass

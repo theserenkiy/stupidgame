@@ -1,7 +1,7 @@
 let W = 100
 let H = 100
 const VISIBLE_CELLS = 21;
-let PLAYER_ID = 4971730
+let PLAYER_ID = 5146213
 
 const cl = console.log
 
@@ -22,6 +22,8 @@ async function api(cmd,data={})
 			if(json.error)throw json.error;
 			throw 'Неизвестная ошибка сервера'
 		}
+		if(json.game_error)
+			alert(json.game_error)
 		return json;
 	}catch(e)
 	{
@@ -83,6 +85,8 @@ function drawMap(center)
 					cls = 'enemy'
 				else cls = o.type
 			}
+			if(cls)
+				cls += ' object'
 			h += `<div style="background-color:${color}" class="${cls}"></div>`
 		}
 	}
@@ -101,13 +105,46 @@ async function updObjects()
 	setTimeout(updObjects,500);
 }
 
+let STEPNUM = 0
+let lastmove = 0
+let last_verified_stepnum = 0
 function move(dir)
 {
+	if(Date.now()-lastmove < 100)
+		return;
+	lastmove = Date.now() 
+	if(STEPNUM-last_verified_stepnum > 5)
+		return
+	STEPNUM++
+	//cl('MOVE',dir);
+	(async () => {
+		let d = await api('move',{player_id: PLAYER_ID, dir, stepnum: STEPNUM}) 
+		//cl('POS',d.pos)
+		last_verified_stepnum = d.stepnum
+		if(d.inventory)
+		{
+			updInventory(d.inventory)
+			if(d.objects_removed)
+				removeObjects(d.objects_removed)
+
+			pos = d.pos
+			drawMap(pos)
+		}
+		if(d.stepnum == STEPNUM && (pos[0] != d.pos[0] || pos[1] != d.pos[1]))
+		{
+			pos = d.pos
+			drawMap(pos)
+		}
+	})()
+	
 	let p = [pos[0]+dir[0], pos[1]+dir[1]]
-	if(p[0] < 0)p[0] = 0
-	if(p[0] >= W)p[0] = W-1
-	if(p[1] < 0)p[1] = 0
-	if(p[1] >= W)p[1] = H-1
+	
+	
+	if(p[0] < 0)p[0] = 0;
+	else if(p[0] >= W)p[0] = W-1;
+	if(p[1] < 0)p[1] = 0;
+	else if(p[1] >= H)p[1] = H-1;
+	
 	if(!getObjectAtCoord(p[0],p[1]))
 	{
 		pos = p
@@ -115,14 +152,33 @@ function move(dir)
 	}
 }
 
-async function initBoard(id)
+function updInventory(inv)
 {
-	let res = await api("init_board",{id,player_id:PLAYER_ID})
+	let slots = [...document.querySelectorAll(".inventory div")]
+	for(let i=0; i < slots.length; i++)
+	{
+		if(!inv[i])
+			break
+		slots[i].className = inv[i].type
+	}
+}
+
+function removeObjects(ids)
+{
+	objects = objects.filter(v => !ids.includes(v.id))
+}
+
+async function initGame(board_id)
+{
+	let res = await api("init_game",{board_id,player_id:PLAYER_ID})
 	W = res.w
 	H = res.h
 	landscape = JSON.parse(res.landscape)
 	pos = res.mycrd
 	objects = res.objects
+
+	if(res.player.inventory)
+		updInventory(JSON.parse(res.player.inventory))
 	// res = await api("init_user")
 
 	drawMap(pos)

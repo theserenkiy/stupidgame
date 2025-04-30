@@ -2,8 +2,7 @@ from db import DB
 from random import randint
 from math import floor
 import json
-
-maps = DB('maps')
+import dbs
 
 def createMap(w,h):
 	map = []
@@ -19,23 +18,23 @@ def createMap(w,h):
 				avg /= 2
 			map[x].append((randint(-50,50)+floor(avg)+360)%360)
 
-	# print(map)
-	ins = maps.insert({"w":w,"h":h,"landscape":json.dumps(map)})
-	print(ins)
+	print(map)
+	id = dbs.maps.insert({"w":w,"h":h,"landscape":json.dumps(map)})
+	print(id)
 
 def getMap(id):
-	row = maps.selectOne("SELECT * FROM maps WHERE id=? LIMIT 1",[id])
+	row = dbs.maps.selectOne("SELECT * FROM maps WHERE id=? LIMIT 1",[id])
 	if not row:
 		raise Exception("Карта не найдена")
 	return row
 
 def listMaps(fields="*"):
-	rows = maps.select(f"SELECT {fields} FROM maps")
+	rows = dbs.maps.select(f"SELECT {fields} FROM maps")
 	print(rows)
 		
 
 if __name__ == "__main__":
-	# createMap(100,100)
+	createMap(100,100)
 	# listMaps("id,w,h")
-	print(dict(maps.selectOne("SELECT json_extract(landscape) AS ls FROM maps LIMIT 1",[])))
+	print(dict(dbs.maps.selectOne("SELECT landscape AS ls FROM maps LIMIT 1",[])))
 	
