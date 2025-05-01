@@ -99,4 +99,4 @@ def runApi(cmd):
 #     return make_response({'status': 'ok', 'answer': []}, 200)
 
 
-app.run(port=5000)
+app.run(port=1234)

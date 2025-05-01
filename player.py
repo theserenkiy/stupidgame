@@ -1,9 +1,12 @@
 import dbs
 import board 
 import object
-import json
 import lib
 from objects_cfg import objcfg
+
+import json
+import time
+
 
 INVENTORY_SLOTS = 10
 
@@ -12,7 +15,7 @@ def listPlayers():
 	print(res)
 	return res
 
-# TODO: control speed of move
+# TODO: control speed of move — sam sdilaesh mni vpadlu
 def move(player_id,dir):
 	out = {}
 	upd = {}
@@ -104,7 +107,7 @@ def move(player_id,dir):
 	
 	upd["last_ping"] = lib.time_ms()
 	if len(upd.keys()):
-		dbs.players.c_updateId(upd,player_id)
+		dbs.players.c_updateId(upd, player_id)
 
 	out["pos"] = p
 	return out

@@ -52,6 +52,23 @@ window.onload = () => {
 				move(dirs[1])
 				e.preventDefault()
 				break;
+
+			case "H":
+				api("heal", {"player_id": PLAYER_ID})
+				e.preventDefault()
+				break;
+			case "h":
+				api("heal", {"player_id": PLAYER_ID})
+				e.preventDefault()
+				break;
+			case "р":
+				api("heal", {"player_id": PLAYER_ID})
+				e.preventDefault()
+				break;
+			case "Р":
+				api("heal", {"player_id": PLAYER_ID})
+				e.preventDefault()
+				break;
 		}
 		
 	}

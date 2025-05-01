@@ -81,7 +81,7 @@ class DB:
 		self.execute(f"DELETE FROM {self.name} WHERE {cond}",condvars)
 		self.commit()
 
-	def c_selectId(self,id,fields=None):
+	def c_selectId(self, id, fields=None):
 		flist = ",".join(fields) if fields else '*'
 		return self.selectOne(f"SELECT {flist} FROM {self.name} WHERE id=?",[id])
 	
