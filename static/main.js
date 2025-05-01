@@ -7,6 +7,7 @@ const INVENTORY_SLOTS = 10;
 const INVENTORY_CELL_SIZE = 80
 let PLAYER_ID = 5146213
 let timediff = 0
+let objcfg = {}
 
 const cl = console.log
 
@@ -113,8 +114,6 @@ function drawMap(center)
 }
 
 
-
-
 async function updObjects()
 {
 	let res = await api('get_map_objects');
@@ -123,6 +122,7 @@ async function updObjects()
 	drawMap(pos)
 	setTimeout(updObjects,500);
 }
+
 
 let STEPNUM = 0
 let lastmove = 0
@@ -179,12 +179,30 @@ function move(dir)
 
 function initInventory()
 {
+	document.onclick = ev => console.log('win click')
 	h = ''
 	for(let i=0; i < INVENTORY_SLOTS; i++)
 	{
-		h += '<div draggable="true"><div></div></div>'
+		h += `<div class="slot" data-num="${i}" draggable="true"><div></div></div>`
 	}
 	document.querySelector(".inventory").innerHTML = h
+	for(let slot of [...document.querySelectorAll(".inventory .slot")])
+	{
+		slot.oncontextmenu = ev => {
+			ev.preventDefault()
+			cl('context menu')
+			invShowMenu(slot)
+		}
+	}
+}
+
+function invShowMenu(slot)
+{
+	let rect = slot.getBoundingClientRect()
+	cl(rect)
+	let menu_el = document.querySelector('.inv_context');
+	menu_el.style.left = (rect.x+rect.width+4)+'px';
+	menu_el.style.top = rect.y+'px';
 }
 
 function updInventory(inv)
@@ -224,6 +242,8 @@ async function initGame(board_id)
 	if(res.player.inventory)
 		updInventory(JSON.parse(res.player.inventory))
 	// res = await api("init_user")
+
+	objcfg = res.objcfg
 
 	res = await api("timesync")
 	timediff = res.time-Date.now()

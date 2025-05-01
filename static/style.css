@@ -114,3 +114,14 @@ body>div{
 	align-items: center;
 	justify-content: center;
 }
+
+.inv_context{
+	position: absolute;
+	width: 250px;
+	height: 300px;
+	border: 1px solid #777;
+	border-radius: 4px;
+	background-color: #fff;
+	top: 0;
+	left: 0;
+}

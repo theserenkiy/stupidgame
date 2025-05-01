@@ -20,6 +20,7 @@ def getmap(d):
 def init_game(d):
 	out = board.initBoard(d['board_id'],d['player_id'])
 	out["player"] = player.getPlayer(d['player_id'])
+	out["objcfg"] = objcfg
 	return out
 
 def move(d):
