@@ -5,7 +5,7 @@ const CELL_SIZE = 64;
 
 const INVENTORY_SLOTS = 10;
 const INVENTORY_CELL_SIZE = 80
-let PLAYER_ID = 5146213
+let PLAYER_ID = 4962376
 let timediff = 0
 let objcfg = {}
 
@@ -30,6 +30,8 @@ async function api(cmd,data={})
 		}
 		if(json.game_error)
 			alert(json.game_error)
+		if(json.msg)
+			alert(json.msg)
 		return json;
 	}catch(e)
 	{
@@ -188,6 +190,11 @@ function initInventory()
 	document.querySelector(".inventory").innerHTML = h
 	for(let slot of [...document.querySelectorAll(".inventory .slot")])
 	{
+		slot.onclick = async () => {
+			res = await api('use_object',{player_id:PLAYER_ID, slotnum: +slot.dataset.num})
+			if(res.inventory)
+				updInventory(res.inventory)
+		}
 		slot.oncontextmenu = ev => {
 			ev.preventDefault()
 			cl('context menu')

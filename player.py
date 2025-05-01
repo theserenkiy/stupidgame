@@ -6,9 +6,10 @@ from objects_cfg import objcfg
 
 import json
 import time
-
+import random
 
 INVENTORY_SLOTS = 10
+MAX_WEARING = 5
 
 def listPlayers():
 	res = [dict(p) for p in dbs.players.select("SELECT * FROM players")]
@@ -37,58 +38,17 @@ def move(player_id,dir):
 	obj = object.getObjectAtCoord(p)
 	if obj:
 		print(obj)
-		ocfg = objcfg[obj["type"]]
-		use_obj = 0
-
-		if "per_slot" not in ocfg:
-			ocfg["per_slot"] = 1
 		
-		if "limit" not in ocfg:
-			ocfg["limit"] = 1
-
-		# p = [pl["x"],pl["y"]]
+		use_obj = 0
+		objtype = obj["type"]
 		inv = getInventory(player_id)
 
-		empty_slot = None
-		found_slot = None
-		objs_of_type = 0
-		for i in range(INVENTORY_SLOTS):
-			slot = inv[i]
-			if not slot:
-				inv[i] = {"type":"empty", "items":[]}
-				slot = inv[i] 
-			if slot["type"] == "empty" and not empty_slot:
-				empty_slot = slot
-			if slot["type"] != obj["type"]:
-				continue
-			slotlen = len(slot["items"]) if "items" in slot else 0
-			objs_of_type += slotlen
-			if slotlen >= ocfg["per_slot"]:
-				continue
-			found_slot = slot
-			break
-
-		if objs_of_type >= ocfg["limit"]:
-			out["game_error"] = "Вы больше не можете поднять такой предмет"
+		res = inventoryAdd(inv,objtype)
+		if 'game_error' in res:
+			out.update(res)
 			p = p0
-		else:
-			item = {
-				"put_time": lib.time_ms() 
-			}
-			if found_slot:
-				found_slot["items"].append(item)
-				use_obj = 1
-			elif empty_slot:
-				empty_slot.update({
-					"type": obj["type"],
-					"items": [item]
-				})
-				use_obj = 1
-			else:
-				out["game_error"] = "Ваш рюкзак переполнен"
-				p = p0
 			
-		if use_obj:
+		else:
 			object.setUsed(obj["id"])
 			out["objects_removed"] = [obj["id"]]
 			# dbs.objects.unlock()
@@ -96,7 +56,7 @@ def move(player_id,dir):
 				"type": obj["type"],
 				"put_time": time.time() 
 			})
-			upd["inventory"] = json.dumps(inv)
+			upd["inventory"] = inv
 			out["inventory"] = inv
 		
 		# dbs.objects.unlock()
@@ -113,16 +73,78 @@ def move(player_id,dir):
 	return out
 
 
+def inventoryAdd(inv,objtype):
+	out = {}
+	ocfg = objcfg[objtype]
+	if "per_slot" not in ocfg:
+		ocfg["per_slot"] = 1
+	
+	if "limit" not in ocfg:
+		ocfg["limit"] = 1
+	empty_slot = None
+	found_slot = None
+	objs_of_type = 0
+	for i in range(INVENTORY_SLOTS):
+		slot = inv[i]
+		if not slot:
+			inv[i] = {"type":"empty", "items":[]}
+			slot = inv[i] 
+		if slot["type"] == "empty" and not empty_slot:
+			empty_slot = slot
+		if slot["type"] != objtype:
+			continue
+		slotlen = len(slot["items"]) if "items" in slot else 0
+		objs_of_type += slotlen
+		if slotlen >= ocfg["per_slot"]:
+			continue
+		found_slot = slot
+		break
+
+	if objs_of_type >= ocfg["limit"]:
+		out["game_error"] = "Вы больше не можете поднять такой предмет"
+		return out
+	else:
+		item = {
+			"put_time": lib.time_ms() 
+		}
+		if found_slot:
+			found_slot["items"].append(item)
+			
+		elif empty_slot:
+			empty_slot.update({
+				"type": objtype,
+				"items": [item]
+			})
+			
+		else:
+			out["game_error"] = "Ваш рюкзак переполнен"
+			return out
+	return out
+
+
 def getInventory(player_id):
 	pl = dbs.players.c_selectId(player_id,['inventory'])
-	inv = json.loads(pl["inventory"] if pl["inventory"] else '[]') 
+	
+	return prepareInventory(pl["inventory"])
 
-	ilen = len(inv) 
-	if ilen < INVENTORY_SLOTS:
-		inv += [None]*(INVENTORY_SLOTS-ilen)
-	elif ilen > INVENTORY_SLOTS:
-		inv = inv[0:INVENTORY_SLOTS]
-	return inv
+def prepareInventory(rawinv):
+	"""Takes inventory field from db, parses it and prepares to use"""
+	return prepareSlots(rawinv,INVENTORY_SLOTS)
+
+def prepareWearing(raw):
+	"""Takes wearing field from db, parses it and prepares to use"""
+	return prepareSlots(raw,MAX_WEARING)
+
+def prepareSlots(raw,amount):
+	slots = json.loads(raw if raw else '[]') 
+
+	ilen = len(slots) 
+	if ilen < amount:
+		slots += [None]*(amount-ilen)
+	elif ilen > amount:
+		slots = slots[0:amount]
+	return slots
+
 
 def clearInventory(id):
 	dbs.players.c_updateId({"inventory":"[]"},id)
@@ -130,7 +152,66 @@ def clearInventory(id):
 def getPlayer(id):
 	return dbs.players.c_selectId(id)
 
+def useObject(player_id, slotnum):
+	if slotnum < 0 or slotnum >= INVENTORY_SLOTS:
+		raise Exception("Slot out of range")
+	ret = {}
+	upd = {}
+	pl = dbs.players.c_selectId(player_id,["inventory","wearing","hp","maxhp","damage","defence"])
+	inv = prepareInventory(pl["inventory"])
+	slot = inv[slotnum]
+	if slot["type"] == "empty":
+		return ret
+	
+	objtype = slot["type"]
+	cfg = objcfg[objtype] if objtype in objcfg else None
+	if not cfg:
+		raise Exception("Unknown item type")
+	
+	slot["items"] = slot["items"][:-1]
+	if not len(slot["items"]):
+		slot["type"] = "empty"
+	
+	ret["inventory"] = inv
+	upd["inventory"] = inv
+
+	# inventory changed. Now lets do some action!
+
+	if cfg["type"] == "heal":
+		if pl["hp"] == pl["maxhp"]:
+			ret["msg"] = "Покушать - это хорошо. Но здоровее вам уже не стать!"
+		else:
+			pl["hp"] += cfg["stats"]["heal"]
+			if pl["hp"] > pl["maxhp"]:
+				pl["hp"] = pl["maxhp"]
+
+	elif cfg["type"] == "damage":
+		wear = prepareWearing(pl["wearing"])
+		for wslot in wear:
+			if wslot["type"] == cfg["type"]:
+				res = inventoryAdd(inv,objtype)
+				ret.update(res)
+				wslot["item"] = objtype
+
+
+	dbs.players.c_updateId(upd,player_id)
+	return ret
+
+def genPlayers(amount):
+	nicks = open("nicknames.txt").read().strip().split("\n")
+	for i in range(amount):
+		pl = [
+			random.randint(1000000,9999999),
+			random.choice(nicks)
+		]
+		print(pl)
+		dbs.players.insert({
+			"id":pl[0],
+			"name":pl[1]
+		})
+
 
 if __name__ == '__main__':
+	genPlayers(10)
 	listPlayers()
-	clearInventory(5146213)
+	# clearInventory(5146213)

@@ -1,7 +1,12 @@
+import json
+def foo(vardict):
+	for k in vardict:
+		val = vardict[k]
+		if type(val) is list or type(val) is dict:
+			vardict[k] = json.dumps(val)
 
+vardict = {"a":[1,2,3],"b": 12, "c": "hui"}
 
-aaa = [{"a": 123}]*3
+foo(vardict)
 
-aaa[1]["a"] = 345
-
-print(aaa)
+print(vardict)

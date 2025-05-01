@@ -2,6 +2,7 @@ import sqlite3
 from util import dotdict
 from threading import Lock, Timer
 import lib
+import json
 
 lock = Lock()
 
@@ -69,6 +70,7 @@ class DB:
 		return self.cursor.lastrowid
 	
 	def update(self, vardict, cond, condvars=[]):
+		print(vardict)
 		if not cond: 
 			raise Exception(f"Cannot update {self.name} without condition")
 		vardict["updated"] = lib.time_ms()
@@ -86,9 +88,11 @@ class DB:
 		return self.selectOne(f"SELECT {flist} FROM {self.name} WHERE id=?",[id])
 	
 	def c_insert(self,vardict):
+		self.prepVarDict(vardict)
 		return self.insert(vardict)
 	
 	def c_updateId(self,vardict,id):
+		self.prepVarDict(vardict)
 		return self.update(vardict,'id=?',[id])
 	
 	def c_selectMany(self,conditions,fields=None):
@@ -98,3 +102,8 @@ class DB:
 		# print(q,conditions.values())
 		return self.select(q,list(conditions.values()))
 
+	def prepVarDict(self,vardict):
+		for k in vardict:
+			val = vardict[k]
+			if type(val) is list or type(val) is dict:
+				vardict[k] = json.dumps(val)

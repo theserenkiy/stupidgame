@@ -99,6 +99,10 @@ body>div{
 	cursor: pointer;
 }
 
+.inventory > div > div{
+	display: none;
+}
+
 .inventory > div.multi > div{
 	content: '3';
 	position: absolute;
@@ -116,6 +120,7 @@ body>div{
 }
 
 .inv_context{
+	display: none;
 	position: absolute;
 	width: 250px;
 	height: 300px;

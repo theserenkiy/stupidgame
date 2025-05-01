@@ -8,7 +8,6 @@ players = DB('players')
 amount = 10
 
 nicks = open("nicknames.txt").read().strip().split("\n")
-
 for i in range(amount):
     pl = [
         randint(1000000,9999999),

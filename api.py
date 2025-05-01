@@ -9,8 +9,6 @@ from random import randint
 import json 
 
 
-
-
 def timesync(d):
 	return {"time": lib.time_ms()}
 
@@ -34,20 +32,17 @@ def heal(d):
 	heal_objs = [el for el in objcfg.keys() if objcfg[el]["type"] == "heal"]
 	# inv = player.getInventory(d["player_id"])
 
-	pl = dbs.players.c_selectId(d["player_id"], ["inventory"])
+	pl = dbs.players.c_selectId(d["player_id"], ["inventory","hp"])
 	inv = json.loads(pl["inventory"] if pl["inventory"] else '[]') 
 	for slot in inv:
-		for heal in heal_objs:
-			print(slot.keys())
-			if slot["type"] == heal:
-				heal_points = objcfg[heal]["stats"]["heal"]
-				del slot["items"][randint(0, len(slot["items"]) - 1)]
-	dbs.players.c_updateId(inv, d["player_id"])
+		if slot["type"] in heal_objs:
+			heal_points = objcfg[slot["type"]]["stats"]["heal"]
+			del slot["items"][randint(0, len(slot["items"]) - 1)]
+		
+	dbs.players.c_updateId({"inventory": json.dumps(inv), "hp": pl["hp"]+heal_points}, d["player_id"])
 
-	hp = dbs.players.c_selectId(d["player_id"], ["hp"])
-	hp["hp"] += heal_points
-	dbs.players.c_updateId(hp, d["player_id"])
-
+def use_object(d):
+	return player.useObject(d["player_id"],d["slotnum"])
 
 
 
