@@ -15,14 +15,20 @@
 #   buf_time: time while the buf works, sec
 
 spritemap = {
-	"sprite1": (
-		"bat_spiked",	"helmet_blueyellow",	"helmet_grayyellow",	"helmet_horned",	"shield_bluewhite",	"shield_redwhite",
-		"sword_big",	"helmet_grayred",		"helmet_graygray",		"sword_triangle",	"sword_pirate",		"knife_kitchen",
-		"green_gras",	"food_mushroom_unknown","food_water_bottle",			"knife_scythe",		"knife_pig",		"knife_cleaver",
-		"food_chocolate","food_hotdog",			"armor_metal",			"food_beer",		"helmet_metal",		"armor_bullet1",
-		"knife_cardboard","skull",				"shit",					"food_apple",		"shield_yellow",	"armor_bullet2",
-		"knife_long",	"bat_golf",				"axe_red",				"shield_wooden",	"axe_big",			""
-	)
+	"sprite1": {
+        "w": 960,
+        "h": 960,
+        "nx": 6,
+        "ny": 6,
+        "map":(
+			"bat_spiked",	"helmet_blueyellow",	"helmet_grayyellow",	"helmet_horned",	"shield_bluewhite",	"shield_redwhite",
+			"sword_big",	"helmet_grayred",		"helmet_graygray",		"sword_triangle",	"sword_pirate",		"knife_kitchen",
+			"other_green_gras",	"food_mushroom_unknown","food_water_bottle",	"knife_scythe",		"knife_pig",		"knife_cleaver",
+			"food_chocolate","food_hotdog",			"armor_metal",			"food_beer",		"helmet_metal",		"armor_bullet1",
+			"knife_cardboard","skull",				"shit",					"food_apple",		"shield_yellow",	"armor_bullet2",
+			"knife_long",	"bat_golf",				"axe_red",				"shield_wooden",	"axe_big",			""
+		)
+    }
 }
 
 
@@ -43,7 +49,7 @@ objcfg = {
 		"class_permap": 30,
 		"damage": 20,
 		"speed": 5,		# strikes per 10 seconds
-		"desc": "Топор. Не самое быстрое и не самое меткое оружие"
+		"desc": "Топор. Не самое быстрое и не самое меткое, но вполне смертельное оружие"
 	},
 
 	"bat":{
@@ -69,7 +75,7 @@ objcfg = {
 		"resp":	60,
 		"damage": 7,
 		"speed": 10,
-		"desc": "Ножик. Лучший аргумент в вашу пользу в кулачном бою"
+		"desc": "Ножик. Лучший аргумент в твою пользу в кулачном бою"
 	},
 
 	"helmet": {
@@ -78,7 +84,30 @@ objcfg = {
 		"class_permap": 50,
 		"resp":	60,
 		"defense": 7,
-		"desc": "Шлем. Защищает черепную полость от побоев"
+		"desc": "Шлем. Надежно защитит твою внутричерепную пустоту от побоев"
+	},
+    
+	"shield": {
+		"group": "weapon",
+		"wear_on": "hand",
+		"class_permap": 50,
+		"resp":	60,
+		"defense": 20,
+        "damage": 3,
+		"desc": "Щит оттянет момент, когда твою тушку размолотят в мелкий фарш"
+	},
+    
+	"armor": {
+		"group": "cloth",
+		"wear_on": "body",
+		"class_permap": 50,
+		"resp":	60,
+		"defense": 30,
+		"desc": "Броня надёжно защищает тебя от перспективы стать трупом после пары ударов"
+	},
+    
+	"other": {
+        "desc": "Никто не знает что это за предмет и зачем он нужен"
 	},
 
     "food_apple":{
@@ -89,7 +118,7 @@ objcfg = {
 		"heal": 0.66
 	},
     "axe_red": {
-		"desc": "Топорик вообще-то для рубки дров. Но и пару дурных черепов при его помощи расшибить - не проблема"
+		"desc": "Топорик вообще-то для рубки дров. Но и пару дурных черепов расшибёт с радостью!"
 	},
 	"axe_big": {
 		"desc": "Топор, специально спроектированный инженерами для усмирения граждан",
@@ -100,58 +129,6 @@ objcfg = {
 		"damage": 1.5	
 	},
 	"bat_golf": {
-		"desc": "Клюшка для гольфа. Удобно махать, может легко надавать по мордасам недоброжелательному гражданину"
-	},
-
-
-
-
-
-
-
-	
-    "knife": {
-		"type": "weapon",
-		"prob": 0.5,
-		"resp":	100,
-		"stats": {
-			"damage": 10
-		}
-	},
-	"hammer": {
-		"type": "weapon",
-		"prob": 0.5,
-		"resp":	100,
-		"stats": {
-			"damage": 7
-		}
-	},
-	# "helmet": {
-	# 	"type": "cloth",
-	# 	"prob": 0.1,
-	# 	"resp":	100,
-	# 	"stats": {
-	# 		"defence": 20,
-	# 		"hp_add": 10
-	# 	}
-	# },
-	"shield": {
-		"type": "cloth",
-		"prob": 0.05,
-		"resp":	100,
-		"stats": {
-			"defence": 60,
-			"hp_add": 5
-		}
-	},
-    # "boots": {
-	# 	"type": "cloth",
-	# 	"prob": 0.05,
-	# 	"resp":	100,
-	# 	"stats": {
-	# 		"defence": 10,
-	# 		"damage_add": 10, 
-	# 		"hp_add": 5
-	# 	}
-	# },
+		"desc": "Клюшка для гольфа. Удобно махать, может легко надавать по мордасам"
+	}
 }
