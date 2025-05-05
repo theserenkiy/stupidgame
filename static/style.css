@@ -84,7 +84,8 @@ body>div{
 	margin: 10px;
 }
 
-.inventory > div{
+
+.inventory > div, .wearing > div{
 	display: flex;
 	position: relative;
 	justify-content: center;
@@ -129,4 +130,13 @@ body>div{
 	background-color: #fff;
 	top: 0;
 	left: 0;
+}
+
+.bottom{
+	display: flex;
+	justify-content: center;
+}
+
+.wearing{
+	display: flex;
 }

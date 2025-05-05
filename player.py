@@ -74,6 +74,7 @@ def move(player_id,dir):
 
 
 def inventoryAdd(inv,objtype):
+	print("inventoryAdd",objtype)
 	out = {}
 	ocfg = objcfg[objtype]
 	if "per_slot" not in ocfg:
@@ -176,7 +177,7 @@ def useObject(player_id, slotnum):
 	upd["inventory"] = inv
 
 	# inventory changed. Now lets do some action!
-
+	
 	if cfg["type"] == "heal":
 		if pl["hp"] == pl["maxhp"]:
 			ret["msg"] = "Покушать - это хорошо. Но здоровее вам уже не стать!"
@@ -185,13 +186,39 @@ def useObject(player_id, slotnum):
 			if pl["hp"] > pl["maxhp"]:
 				pl["hp"] = pl["maxhp"]
 
-	elif cfg["type"] == "damage":
+	elif cfg["type"] in ["weapon","cloth"]:
 		wear = prepareWearing(pl["wearing"])
-		for wslot in wear:
-			if wslot["type"] == cfg["type"]:
-				res = inventoryAdd(inv,objtype)
-				ret.update(res)
-				wslot["item"] = objtype
+		
+		same_type_slot = None
+		empty_slot = None
+		for i in range(MAX_WEARING):
+			if not wear[i]:
+				wear[i] = {"type":"empty"}
+				
+			slot = wear[i]
+			if slot["type"]=="empty":
+				if not empty_slot:
+					empty_slot = wear[i]
+				continue
+				
+			if slot["type"] == cfg["type"]:
+				same_type_slot = wear[i]
+		
+
+
+		if same_type_slot:
+			print("same type slot")
+			inventoryAdd(inv,same_type_slot["item"])
+			slot = same_type_slot
+			same_type_slot["item"] = objtype
+		elif empty_slot:
+			print("empty slot")
+			slot = empty_slot
+		slot["item"] = objtype
+		slot["type"] = cfg["type"]
+
+		upd["wearing"] = wear
+		ret["wearing"] = wear
 
 
 	dbs.players.c_updateId(upd,player_id)

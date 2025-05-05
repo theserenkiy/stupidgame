@@ -5,6 +5,7 @@ const CELL_SIZE = 64;
 
 const INVENTORY_SLOTS = 10;
 const INVENTORY_CELL_SIZE = 80
+const WEARING_SLOTS = 5
 let PLAYER_ID = 4962376
 let timediff = 0
 let objcfg = {}
@@ -32,12 +33,29 @@ async function api(cmd,data={})
 			alert(json.game_error)
 		if(json.msg)
 			alert(json.msg)
+		processServerResponse(json)
 		return json;
 	}catch(e)
 	{
 		alert(`Штото пошло не так: ${e}`);
 		return null;
 	}
+}
+
+function prepJson(v)
+{
+	return typeof v == 'string' ? JSON.parse(v) : v
+}
+
+function processServerResponse(res)
+{
+	let d = res.inventory || (res.player && res.player.inventory)
+	if(d)
+		updInventory(prepJson(d))
+
+	d = res.wearing || (res.player && res.player.wearing)
+	if(d)
+		updWearing(prepJson(d))
 }
 
 function getServerTime()
@@ -61,7 +79,7 @@ function initCss()
 	.inventory {
 		width: ${invw}px;
 	}
-	.inventory > div{
+	.inventory > div, .wearing > div{
 		width: ${INVENTORY_CELL_SIZE}px;
 		height: ${INVENTORY_CELL_SIZE}px;
 		margin: ${invm}px;
@@ -203,6 +221,16 @@ function initInventory()
 	}
 }
 
+function initWearing()
+{
+	h = ''
+	for(let i=0; i < WEARING_SLOTS; i++)
+	{
+		h += `<div class="slot" data-num="${i}"></div>`
+	}
+	document.querySelector(".wearing").innerHTML = h
+}
+
 function invShowMenu(slot)
 {
 	let rect = slot.getBoundingClientRect()
@@ -230,14 +258,29 @@ function updInventory(inv)
 	}
 }
 
+function updWearing(inv)
+{
+	let slots = [...document.querySelectorAll(".wearing > div")]
+	for(let i=0; i < slots.length; i++)
+	{
+		if(!inv[i])
+			break
+		let cls = inv[i].item			
+		slots[i].className = cls
+	}
+}
+
 function removeObjects(ids)
 {
 	objects = objects.filter(v => !ids.includes(v.id))
 }
 
+
+
 async function initGame(board_id)
 {
 	initInventory()
+	initWearing()
 
 	let res = await api("init_game",{board_id,player_id:PLAYER_ID})
 	W = res.w
@@ -245,9 +288,6 @@ async function initGame(board_id)
 	landscape = JSON.parse(res.landscape)
 	pos = res.mycrd
 	objects = res.objects
-
-	if(res.player.inventory)
-		updInventory(JSON.parse(res.player.inventory))
 	// res = await api("init_user")
 
 	objcfg = res.objcfg

@@ -13,7 +13,7 @@ def respawnObjects(board_id,w,h):
 		"SELECT id FROM objects WHERE board_id=? AND shown=0 AND spawntime <= ?",
 		[board_id,round(time.time())]
 	)
-	
+	 
 	if not len(resp_objects):
 		return
 	
