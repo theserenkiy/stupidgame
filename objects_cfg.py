@@ -23,9 +23,9 @@ spritemap = {
         "map":(
 			"bat_spiked",	"helmet_blueyellow",	"helmet_grayyellow",	"helmet_horned",	"shield_bluewhite",	"shield_redwhite",
 			"sword_big",	"helmet_grayred",		"helmet_graygray",		"sword_triangle",	"sword_pirate",		"knife_kitchen",
-			"other_green_gras",	"food_mushroom_unknown","food_water_bottle",	"knife_scythe",		"knife_pig",		"knife_cleaver",
+			"other_green_gras",	"food_mushroom_unknown","food_water_bottle","knife_scythe",		"knife_pig",		"knife_cleaver",
 			"food_chocolate","food_hotdog",			"armor_metal",			"food_beer",		"helmet_metal",		"armor_bullet1",
-			"knife_cardboard","skull",				"shit",					"food_apple",		"shield_yellow",	"armor_bullet2",
+			"knife_cardboard","other_skull",		"other_shit",			"food_apple",		"shield_yellow",	"armor_bullet2",
 			"knife_long",	"bat_golf",				"axe_red",				"shield_wooden",	"axe_big",			""
 		)
     }
@@ -35,9 +35,9 @@ spritemap = {
 objcfg = {
 	"food":{
 		"group": "heal",
-		"class_permap": 200,	# total objects of class per map 100x100
-		"user_limit": 50,		# max items of one item user can hold in inventory
-		"per_slot":	5,			# max items per slot
+		"permap": 50,			# items of name per map 100x100
+		"user_limit": 50,		# max items of name, user can hold in inventory
+		"per_slot":	5,			# max items of name per slot
 		"resp": 100,			# respawn seconds
 		"heal": 20,			# hp add when used
 		"delay": 5000		# delay after use, before you can heal next time, ms
@@ -45,8 +45,8 @@ objcfg = {
 
 	"axe":{
 		"group": "weapon",
-		"resp": 100,
-		"class_permap": 30,
+		"resp": 20,
+		"permap": 30,
 		"damage": 20,
 		"speed": 5,		# strikes per 10 seconds
 		"desc": "Топор. Не самое быстрое и не самое меткое, но вполне смертельное оружие"
@@ -54,15 +54,15 @@ objcfg = {
 
 	"bat":{
 		"group": "weapon",
-		"resp": 70,
-		"class_permap": 50,
+		"resp": 30,
+		"permap": 50,
 		"damage": 5,
 		"speed": 7
 	},
 
 	"sword": {
 		"group": "weapon",
-		"class_permap": 20,
+		"permap": 20,
 		"resp":	100,
 		"damage": 15,
 		"speed": 8,
@@ -71,7 +71,7 @@ objcfg = {
 
 	"knife": {
 		"group": "weapon",
-		"class_permap": 70,
+		"permap": 70,
 		"resp":	60,
 		"damage": 7,
 		"speed": 10,
@@ -81,7 +81,7 @@ objcfg = {
 	"helmet": {
 		"group": "cloth",
 		"wear_on": "head",
-		"class_permap": 50,
+		"permap": 50,
 		"resp":	60,
 		"defense": 7,
 		"desc": "Шлем. Надежно защитит твою внутричерепную пустоту от побоев"
@@ -90,7 +90,7 @@ objcfg = {
 	"shield": {
 		"group": "weapon",
 		"wear_on": "hand",
-		"class_permap": 50,
+		"permap": 50,
 		"resp":	60,
 		"defense": 20,
         "damage": 3,
@@ -100,13 +100,14 @@ objcfg = {
 	"armor": {
 		"group": "cloth",
 		"wear_on": "body",
-		"class_permap": 50,
+		"permap": 50,
 		"resp":	60,
 		"defense": 30,
 		"desc": "Броня надёжно защищает тебя от перспективы стать трупом после пары ударов"
 	},
     
 	"other": {
+        "permap": 0,
         "desc": "Никто не знает что это за предмет и зачем он нужен"
 	},
 

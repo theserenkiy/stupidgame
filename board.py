@@ -2,7 +2,7 @@ import time
 import math 
 import random 
 import lib
-
+import object
 from objects_cfg import objcfg
 import map
 
@@ -43,18 +43,19 @@ def spawnObjects(board_id,w,h):
 	
 	# time.gmtime()
 	cells_count = w * h
+	map_factor = cells_count/10000
 	objects = []
 	used_coord = []
-	for t in objcfg:
-		c = objcfg[t]
-		amount = round(cells_count * c["prob"] * 0.01)
+	for name in object.cfg:
+		c = object.cfg[name]
+		amount = round(c["permap"]*map_factor)
 		# print(amount)
 		oids = []
 		for i in range(amount):
 			crd = lib.getRandCoord(used_coord, w, h)
 			obj = {
 				"board_id": board_id,
-				"type": t,
+				"name": name,
 				"x": crd[0],
 				"y": crd[1],
 				"updated": 0,

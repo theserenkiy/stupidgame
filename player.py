@@ -40,10 +40,10 @@ def move(player_id,dir):
 		print(obj)
 		
 		use_obj = 0
-		objtype = obj["type"]
+		objname = obj["name"]
 		inv = getInventory(player_id)
 
-		res = inventoryAdd(inv,objtype)
+		res = inventoryAdd(inv,objname)
 		if 'game_error' in res:
 			out.update(res)
 			p = p0
@@ -53,7 +53,7 @@ def move(player_id,dir):
 			out["objects_removed"] = [obj["id"]]
 			# dbs.objects.unlock()
 			inv.append({
-				"type": obj["type"],
+				"type": obj["name"],
 				"put_time": time.time() 
 			})
 			upd["inventory"] = inv
@@ -73,15 +73,11 @@ def move(player_id,dir):
 	return out
 
 
-def inventoryAdd(inv,objtype):
-	print("inventoryAdd",objtype)
+def inventoryAdd(inv,objname):
+	print("inventoryAdd",objname)
 	out = {}
-	ocfg = objcfg[objtype]
-	if "per_slot" not in ocfg:
-		ocfg["per_slot"] = 1
+	ocfg = object.cfg[objname]
 	
-	if "limit" not in ocfg:
-		ocfg["limit"] = 1
 	empty_slot = None
 	found_slot = None
 	objs_of_type = 0
@@ -92,7 +88,7 @@ def inventoryAdd(inv,objtype):
 			slot = inv[i] 
 		if slot["type"] == "empty" and not empty_slot:
 			empty_slot = slot
-		if slot["type"] != objtype:
+		if slot["type"] != objname:
 			continue
 		slotlen = len(slot["items"]) if "items" in slot else 0
 		objs_of_type += slotlen
@@ -113,7 +109,7 @@ def inventoryAdd(inv,objtype):
 			
 		elif empty_slot:
 			empty_slot.update({
-				"type": objtype,
+				"type": objname,
 				"items": [item]
 			})
 			
@@ -178,7 +174,7 @@ def useObject(player_id, slotnum):
 
 	# inventory changed. Now lets do some action!
 	
-	if cfg["type"] == "heal":
+	if cfg["group"] == "heal":
 		if pl["hp"] == pl["maxhp"]:
 			ret["msg"] = "Покушать - это хорошо. Но здоровее вам уже не стать!"
 		else:
@@ -186,7 +182,7 @@ def useObject(player_id, slotnum):
 			if pl["hp"] > pl["maxhp"]:
 				pl["hp"] = pl["maxhp"]
 
-	elif cfg["type"] in ["weapon","cloth"]:
+	elif cfg["group"] in ["weapon","cloth"]:
 		wear = prepareWearing(pl["wearing"])
 		
 		same_type_slot = None
@@ -201,7 +197,7 @@ def useObject(player_id, slotnum):
 					empty_slot = wear[i]
 				continue
 				
-			if slot["type"] == cfg["type"]:
+			if slot["type"] == cfg["group"]:
 				same_type_slot = wear[i]
 		
 
@@ -215,7 +211,7 @@ def useObject(player_id, slotnum):
 			print("empty slot")
 			slot = empty_slot
 		slot["item"] = objtype
-		slot["type"] = cfg["type"]
+		slot["type"] = cfg["group"]
 
 		upd["wearing"] = wear
 		ret["wearing"] = wear
