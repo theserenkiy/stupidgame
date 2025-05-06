@@ -1,6 +1,6 @@
 const cl = console.log
 
-async function api(cmd,data={})
+async function base_api(cmd,data={})
 {
 	try{
 		//let q = data.entries.map(v => v[0]+'='+encodeURIComponent(v[1])).join('&');
@@ -17,11 +17,7 @@ async function api(cmd,data={})
 			if(json.error)throw json.error;
 			throw 'Неизвестная ошибка сервера'
 		}
-		if(json.game_error)
-			alert(json.game_error)
-		if(json.msg)
-			alert(json.msg)
-		//processServerResponse(json)
+		
 		return json;
 	}catch(e)
 	{

@@ -76,7 +76,7 @@ async function send(ev)
 		if(!mm)
 			throw "Incorrect query"
 
-		let res = await api('dbquery',{query,table:mm[3]})
+		let res = await base_api('dbquery',{query,table:mm[3]})
 		if(res.db_error)
 		{
 			throw "DB error: "+res.db_error

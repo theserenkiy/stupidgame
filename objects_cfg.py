@@ -80,7 +80,7 @@ objcfg = {
 
 	"helmet": {
 		"group": "cloth",
-		"wear_on": "head",
+		"wear_type": "head",
 		"permap": 50,
 		"resp":	60,
 		"defense": 7,
@@ -88,8 +88,8 @@ objcfg = {
 	},
     
 	"shield": {
-		"group": "weapon",
-		"wear_on": "hand",
+		"group": "shield",
+		"wear_type": "shield",
 		"permap": 50,
 		"resp":	60,
 		"defense": 20,
@@ -99,7 +99,7 @@ objcfg = {
     
 	"armor": {
 		"group": "cloth",
-		"wear_on": "body",
+		"wear_type": "body",
 		"permap": 50,
 		"resp":	60,
 		"defense": 30,
@@ -107,6 +107,7 @@ objcfg = {
 	},
     
 	"other": {
+        "group": "others",
         "permap": 0,
         "desc": "Никто не знает что это за предмет и зачем он нужен"
 	},

@@ -32,7 +32,7 @@ body>div{
 }
 
 .object::before{
-	content: 'x';
+	content: '';
 }
 .me::before{
 	content: '웃';

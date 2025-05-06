@@ -2,7 +2,6 @@ import dbs
 import board 
 import object
 import lib
-from objects_cfg import objcfg
 
 import json
 import time
@@ -10,6 +9,8 @@ import random
 
 INVENTORY_SLOTS = 10
 MAX_WEARING = 5
+
+
 
 def listPlayers():
 	res = [dict(p) for p in dbs.players.select("SELECT * FROM players")]
@@ -97,7 +98,7 @@ def inventoryAdd(inv,objtype):
 		found_slot = slot
 		break
 
-	if objs_of_type >= ocfg["limit"]:
+	if objs_of_type >= ocfg["user_limit"]:
 		out["game_error"] = "Вы больше не можете поднять такой предмет"
 		return out
 	else:
@@ -144,7 +145,7 @@ def prepareSlots(raw,amount):
 
 
 def clearInventory(id):
-	dbs.players.c_updateId({"inventory":"[]"},id)
+	dbs.players.c_updateId({"inventory":"[]", "wearing":"[]"},id)
 
 def getPlayer(id):
 	return dbs.players.c_selectId(id)
@@ -161,7 +162,7 @@ def useObject(player_id, slotnum):
 		return ret
 	
 	objtype = slot["type"]
-	cfg = objcfg[objtype] if objtype in objcfg else None
+	cfg = object.cfg[objtype] if objtype in object.cfg else None
 	if not cfg:
 		raise Exception("Unknown item type")
 	
@@ -182,7 +183,7 @@ def useObject(player_id, slotnum):
 			if pl["hp"] > pl["maxhp"]:
 				pl["hp"] = pl["maxhp"]
 
-	elif cfg["group"] in ["weapon","cloth"]:
+	elif "wear_type" in cfg:
 		wear = prepareWearing(pl["wearing"])
 		
 		same_type_slot = None
@@ -197,7 +198,7 @@ def useObject(player_id, slotnum):
 					empty_slot = wear[i]
 				continue
 				
-			if slot["type"] == cfg["group"]:
+			if slot["type"] == cfg["wear_type"]:
 				same_type_slot = wear[i]
 		
 
@@ -235,6 +236,6 @@ def genPlayers(amount):
 
 
 if __name__ == '__main__':
-	genPlayers(10)
-	listPlayers()
-	# clearInventory(5146213)
+	# genPlayers(10)
+	# listPlayers()
+	clearInventory(4962376)

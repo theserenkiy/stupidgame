@@ -10,7 +10,16 @@ let PLAYER_ID = 4962376
 let timediff = 0
 let objcfg = {}
 
-
+async function api(cmd,data={})
+{
+	let res = await base_api(cmd,data)
+	if(res.game_error)
+		alert(res.game_error)
+	if(res.msg)
+		alert(res.msg)
+	processServerResponse(res)
+	return res
+}
 
 function processServerResponse(res)
 {
@@ -32,7 +41,7 @@ function initCss()
 {
 	let invm = Math.ceil(INVENTORY_CELL_SIZE/20)
 	let invw = 2*(INVENTORY_CELL_SIZE+invm+invm+2)
-	document.querySelector('style.custom').innerHTML = `
+	let styles = `
 	.map {
 		width: ${VISIBLE_CELLS*(CELL_SIZE+1)}px;
 	}
@@ -49,7 +58,26 @@ function initCss()
 		height: ${INVENTORY_CELL_SIZE}px;
 		margin: ${invm}px;
 	}
-	`
+	`;
+
+	for(let type in objcfg)
+	{
+		let c = objcfg[type]
+		styles += `
+		.object.${type}{
+			background: url('/sprites/${c.icon.sprite}.png') no-repeat;
+			background-size: 600%;
+		}
+		.map > div.object.${type}{
+			background-position: ${-c.icon.y*CELL_SIZE}px ${-c.icon.x*CELL_SIZE}px;
+		}
+		.inventory > div.object.${type}, .wearing > div.object.${type}{
+			background-position: ${-c.icon.y*INVENTORY_CELL_SIZE}px ${-c.icon.x*INVENTORY_CELL_SIZE}px;
+		}
+		`
+	}
+
+	document.querySelector('style.custom').innerHTML = styles;
 }
 
 let objects = []
@@ -88,7 +116,7 @@ function drawMap(center)
 			{
 				if(o.type=='user')
 					cls = 'enemy'
-				else cls = o.name
+				else cls = o.type
 			}
 			if(cls)
 				cls += ' object'
@@ -168,7 +196,7 @@ function initInventory()
 	h = ''
 	for(let i=0; i < INVENTORY_SLOTS; i++)
 	{
-		h += `<div class="slot" data-num="${i}" draggable="true"><div></div></div>`
+		h += `<div class="slot object" data-num="${i}" draggable="true"><div></div></div>`
 	}
 	document.querySelector(".inventory").innerHTML = h
 	for(let slot of [...document.querySelectorAll(".inventory .slot")])
@@ -191,7 +219,7 @@ function initWearing()
 	h = ''
 	for(let i=0; i < WEARING_SLOTS; i++)
 	{
-		h += `<div class="slot" data-num="${i}"></div>`
+		h += `<div class="slot object" data-num="${i}"></div>`
 	}
 	document.querySelector(".wearing").innerHTML = h
 }
@@ -212,7 +240,7 @@ function updInventory(inv)
 	{
 		if(!inv[i])
 			break
-		let cls = inv[i].type
+		let cls = 'object '+inv[i].type
 		if(inv[i].items && inv[i].items.length > 1)
 		{
 			cls += ' multi'
@@ -230,7 +258,7 @@ function updWearing(inv)
 	{
 		if(!inv[i])
 			break
-		let cls = inv[i].item			
+		let cls = 'object '+inv[i].item			
 		slots[i].className = cls
 	}
 }

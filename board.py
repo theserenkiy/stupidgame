@@ -8,6 +8,8 @@ import map
 
 import dbs
 
+spawn_factor = 0.3
+
 def createBoard(map_id):
 	m = map.getMap(map_id)
 	id = dbs.boards.insert({"map_id":map_id, "w":m['w'], "h":m['h']})
@@ -40,16 +42,15 @@ def delObjects(board_id):
 	dbs.objects.delete("board_id=?",[board_id])
 
 def spawnObjects(board_id,w,h):
-	
+	print("Spawn objects")
 	# time.gmtime()
 	cells_count = w * h
 	map_factor = cells_count/10000
-	objects = []
 	used_coord = []
 	for type in object.cfg:
 		c = object.cfg[type]
-		amount = round(c["permap"]*map_factor)
-		# print(amount)
+		amount = round(c["permap"]*map_factor*spawn_factor)
+		print(type,amount)
 		oids = []
 		for i in range(amount):
 			crd = lib.getRandCoord(used_coord, w, h)
@@ -68,7 +69,26 @@ def spawnObjects(board_id,w,h):
 			oids.append(oid)
 			used_coord.append(crd)
 
+def respawnObjects(board_id,w,h):
+	resp_objects = dbs.objects.select(
+		"SELECT id FROM objects WHERE board_id=? AND shown=0 AND spawntime <= ?",
+		[board_id,round(time.time())]
+	)
 
+	cells = w*h
+	 
+	if not len(resp_objects):
+		return
+	
+	for o in resp_objects:
+		crd = lib.getRandCoord(board.getUsedCoords(board_id),w,h)
+		upd = {
+			"x": crd[0],
+			"y": crd[1],
+			"shown": 1,
+			"spawntime": 0
+		}
+		dbs.objects.c_updateId(upd,o.id)
 
 def getUsedCoords(board_id):
 	pls = dbs.players.c_selectMany({"board_id":board_id},['x','y'])
@@ -85,6 +105,7 @@ def getBoardDim(id):
 	return dbs.boards.c_selectId(id,['w','h'])
 
 if __name__ == "__main__":
+	object.compileCfg()
 	delObjects(1)
 	#createBoard(1)
 	spawnObjects(1,100,100)
