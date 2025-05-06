@@ -21,7 +21,7 @@ def initBoard(board_id,player_id):
 	print(b)
 	m = dbs.maps.c_selectId(b['map_id'])
 	
-	objects = [dict(o) for o in dbs.objects.c_selectMany({'board_id': board_id, 'shown':1},['id','type','x','y'])]
+	objects = [dict(o) for o in dbs.objects.c_selectMany({'board_id': board_id, 'shown':1},['id','name','x','y'])]
 
 	mycrd = lib.getRandCoord(getUsedCoords(board_id),b["w"],b["h"])
 

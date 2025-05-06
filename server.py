@@ -5,9 +5,12 @@ globals()["cache"] = {}
 import db
 import api
 import traceback
+import object
 
 from os import system
 system("title STUPIDGAME")
+
+object.compileCfg()
 
 app = Flask(__name__,
             static_url_path='', 

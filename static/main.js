@@ -123,7 +123,7 @@ function drawMap(center)
 			{
 				if(o.type=='user')
 					cls = 'enemy'
-				else cls = o.type
+				else cls = o.name
 			}
 			if(cls)
 				cls += ' object'

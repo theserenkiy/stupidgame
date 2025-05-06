@@ -4,7 +4,7 @@ import board
 import player
 import lib
 import dbs
-from objects_cfg import objcfg
+import object
 from random import randint
 import json 
 
@@ -18,7 +18,7 @@ def getmap(d):
 def init_game(d):
 	out = board.initBoard(d['board_id'],d['player_id'])
 	out["player"] = player.getPlayer(d['player_id'])
-	out["objcfg"] = objcfg
+	out["objcfg"] = object.client_cfg
 	return out
 
 def move(d):
