@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>DB admin</title>
+	<script src="/lib.js"></script>
+<style>
+	.top{
+		display: flex;
+		flex-wrap: wrap;
+	}
+	.last_queries{
+		margin-left: 20px;
+		display: flex;
+		flex-direction: column;
+	}
+	.last_queries a{
+		cursor: pointer;
+		text-decoration: underline;
+		text-decoration-style:dashed;
+		color: #777;
+	}
+	textarea{
+		width: 100vw;
+		min-width: 280px;
+		max-width: 1000px;
+		height: 100px;
+	}
+	table{
+		border-collapse: collapse;
+	}
+	
+	table td{
+		border: 1px solid #aaa;
+		padding: 5px;
+	}
+	</style>
+<script>
+
+function getLastQueries()
+{
+	let list = JSON.parse(localStorage.lastQueries || '[]')
+	list.sort((a,b) => b[1]-a[1])
+	return list
+}
+
+function updateLastQueries(lq)
+{
+	let qq = document.querySelector('.last_queries')
+	qq.innerHTML = '';
+
+	for(let q of lq)
+	{
+		cl({q})
+		let a = document.createElement('A')
+		a.onclick = () => {
+			let f = document.querySelector('form')
+			f.elements.query.value = q[0]
+			if(/^SELECT/i.test(q[0]))
+				send()
+		}
+		a.innerHTML = q[0].length > 100 ? q[0].substring(0,100)+'...' : q[0]
+		qq.appendChild(a)
+	}
+	
+}
+
+async function send(ev)
+{
+	try{
+		if(ev)
+			ev.preventDefault()
+		let query = document.querySelector('form textarea').value.trim();
+		let mm = /((SELECT|DELETE)\s+.+?\s+FROM|UPDATE|INSERT\s+INTO)\s+\`?(.+?)\`?(\s|$)/.exec(query)
+		if(!mm)
+			throw "Incorrect query"
+
+		let res = await api('dbquery',{query,table:mm[3]})
+		if(res.db_error)
+		{
+			throw "DB error: "+res.db_error
+		}
+
+		let lq = getLastQueries()
+		let q = lq.find(v => v[0]==query)
+		if(q)
+			q[1] = Date.now()
+		else
+			lq.push([query,Date.now()])
+		updateLastQueries(lq)
+		localStorage.lastQueries = JSON.stringify(lq)
+
+		let table_el = document.querySelector('table tbody')
+
+		document.querySelector('.found').innerHTML = res.found
+
+		if(!res.found)
+		{
+			table_el.innerHTML = ''
+			return
+		}
+
+		let table = []
+		if(res.keys)
+			table.push(res.keys.map(v => `<b>${v}</b>`))
+		
+		for(let row of res.rows)
+			table.push(row)
+
+		table_el.innerHTML = table.map(
+			row => '<tr>'+row.map(cell => `<td>${cell}</td>`).join('')+'</tr>'
+		).join('')
+	}catch(e)
+	{
+		alert(e)
+	}
+}
+
+window.onload = () => {
+
+	updateLastQueries(getLastQueries())
+	document.querySelector('form').onsubmit = send
+
+}
+</script>
+
+</head>
+<body>
+	<div class="top">
+		<form>
+			<textarea name="query"></textarea><br>
+			<button type="submit">Execute</button>
+		</form>
+		<div class="last_queries">
+
+		</div>
+	</div>
+	
+	<div class="error">
+
+	</div>
+	<p>Rows found: <span class="found"></span></p>
+	<table>
+		<tbody>
+
+		</tbody>
+	</table>
+</body>
+</html>

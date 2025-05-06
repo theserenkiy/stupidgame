@@ -40,10 +40,10 @@ def move(player_id,dir):
 		print(obj)
 		
 		use_obj = 0
-		objname = obj["name"]
+		objtype = obj["type"]
 		inv = getInventory(player_id)
 
-		res = inventoryAdd(inv,objname)
+		res = inventoryAdd(inv,objtype)
 		if 'game_error' in res:
 			out.update(res)
 			p = p0
@@ -53,7 +53,7 @@ def move(player_id,dir):
 			out["objects_removed"] = [obj["id"]]
 			# dbs.objects.unlock()
 			inv.append({
-				"type": obj["name"],
+				"type": obj["type"],
 				"put_time": time.time() 
 			})
 			upd["inventory"] = inv
@@ -73,10 +73,10 @@ def move(player_id,dir):
 	return out
 
 
-def inventoryAdd(inv,objname):
-	print("inventoryAdd",objname)
+def inventoryAdd(inv,objtype):
+	print("inventoryAdd",objtype)
 	out = {}
-	ocfg = object.cfg[objname]
+	ocfg = object.cfg[objtype]
 	
 	empty_slot = None
 	found_slot = None
@@ -88,7 +88,7 @@ def inventoryAdd(inv,objname):
 			slot = inv[i] 
 		if slot["type"] == "empty" and not empty_slot:
 			empty_slot = slot
-		if slot["type"] != objname:
+		if slot["type"] != objtype:
 			continue
 		slotlen = len(slot["items"]) if "items" in slot else 0
 		objs_of_type += slotlen
@@ -109,7 +109,7 @@ def inventoryAdd(inv,objname):
 			
 		elif empty_slot:
 			empty_slot.update({
-				"type": objname,
+				"type": objtype,
 				"items": [item]
 			})
 			

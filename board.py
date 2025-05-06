@@ -21,7 +21,7 @@ def initBoard(board_id,player_id):
 	print(b)
 	m = dbs.maps.c_selectId(b['map_id'])
 	
-	objects = [dict(o) for o in dbs.objects.c_selectMany({'board_id': board_id, 'shown':1},['id','name','x','y'])]
+	objects = [dict(o) for o in dbs.objects.c_selectMany({'board_id': board_id, 'shown':1},['id','type','x','y'])]
 
 	mycrd = lib.getRandCoord(getUsedCoords(board_id),b["w"],b["h"])
 
@@ -46,8 +46,8 @@ def spawnObjects(board_id,w,h):
 	map_factor = cells_count/10000
 	objects = []
 	used_coord = []
-	for name in object.cfg:
-		c = object.cfg[name]
+	for type in object.cfg:
+		c = object.cfg[type]
 		amount = round(c["permap"]*map_factor)
 		# print(amount)
 		oids = []
@@ -55,7 +55,7 @@ def spawnObjects(board_id,w,h):
 			crd = lib.getRandCoord(used_coord, w, h)
 			obj = {
 				"board_id": board_id,
-				"name": name,
+				"type": type,
 				"x": crd[0],
 				"y": crd[1],
 				"updated": 0,

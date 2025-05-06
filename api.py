@@ -12,6 +12,31 @@ import json
 def timesync(d):
 	return {"time": lib.time_ms()}
 
+def dbquery(d):
+	# try:
+	if not hasattr(dbs,d["table"]):
+		raise Exception(f"Incorrect table {d['table']}")
+	
+	cur = getattr(dbs,d["table"]).execute(d["query"])
+	rows = cur.fetchall()
+	out = {
+		"found": len(rows) 
+	}
+
+	if not out["found"]:
+		return out
+	
+	
+	out["keys"] = list(dict(rows[0]).keys())
+	# print(list(dict(rows[0]).values()))
+	# print(rows)
+	out["rows"] = [list(dict(row).values()) for row in rows]
+	return out
+		
+	# except Exception as e:
+	# 	return {"db_error": str(e)}
+	
+
 def getmap(d):
 	return {"map": map.getMap(d['id'])}
 

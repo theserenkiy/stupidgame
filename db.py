@@ -38,6 +38,8 @@ class DB:
 		finally:
 			if not self.locked:
 				lock.release()
+
+		return self.cursor
 	
 	def commit(self):
 		self.need_commit = 1

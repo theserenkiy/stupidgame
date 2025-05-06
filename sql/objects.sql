@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS Objects (
     board_id INTEGER,
 	x INT UNSIGNED DEFAULT 0,
 	y int UNSIGNED DEFAULT 0,
-	`name` STRING,
+	`type` STRING,
     shown INTEGER DEFAULT 0,
     spawntime INTEGER DEFAULT 0,
     updated INTEGER DEFAULT 0
