@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS Players (
 	id STRING PRIMARY KEY,
 	name TEXT,
+	char INT,
 	hp INT DEFAULT 100,
 	maxhp INT DEFAULT 100,
 	exp INT DEFAULT 0,
@@ -10,6 +11,7 @@ CREATE TABLE IF NOT EXISTS Players (
 	board_id INT DEFAULT 0,
 	x INT DEFAULT 0,
 	y INT DEFAULT 0,
+	xdir STRING DEFAULT 'left',
 	inventory TEXT,
 	wearing TEXT,
 	buffs TEXT,

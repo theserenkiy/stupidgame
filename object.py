@@ -35,8 +35,8 @@ def compileCfg():
 					raise Exception(f"Duplicate image for item {name}: sprites {dupsprite} and {sname}")
 				item_sprites[name] = {
 					"sprite": sname,
-					"x": int(i/spr["nx"]),
-					"y": int(i%spr["nx"]),
+					"x": int(i%spr["nx"]),
+					"y": int(i/spr["nx"]),
 					"w": imw,
 					"h": imh
 				}

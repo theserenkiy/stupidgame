@@ -44,11 +44,11 @@ def init_game(d):
 	out = board.initBoard(d['board_id'],d['player_id'])
 	out["player"] = player.getPlayer(d['player_id'])
 	out["objcfg"] = object.client_cfg
+	out["charcfg"] = player.chars
 	return out
 
 def move(d):
 	out = {"stepnum":d["stepnum"], **player.move(d["player_id"],d["dir"])}
-	# print(f"yo bitch api->move out >>>>>{out}")
 	return out
 
 

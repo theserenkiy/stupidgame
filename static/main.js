@@ -6,9 +6,11 @@ const CELL_SIZE = 64;
 const INVENTORY_SLOTS = 10;
 const INVENTORY_CELL_SIZE = 80
 const WEARING_SLOTS = 5
-let PLAYER_ID = 4962376
+let PLAYER_ID = 2623382
 let timediff = 0
 let objcfg = {}
+let charcfg = {}
+let player
 
 async function api(cmd,data={})
 {
@@ -69,12 +71,27 @@ function initCss()
 			background-size: 600%;
 		}
 		.map > div.object.${type}{
-			background-position: ${-c.icon.y*CELL_SIZE}px ${-c.icon.x*CELL_SIZE}px;
+			background-position: ${-c.icon.x*CELL_SIZE}px ${-c.icon.y*CELL_SIZE}px;
 		}
 		.inventory > div.object.${type}, .wearing > div.object.${type}{
-			background-position: ${-c.icon.y*INVENTORY_CELL_SIZE}px ${-c.icon.x*INVENTORY_CELL_SIZE}px;
+			background-position: ${-c.icon.x*INVENTORY_CELL_SIZE}px ${-c.icon.y*INVENTORY_CELL_SIZE}px;
 		}
 		`
+	}
+	let charid = 0
+	for(let char of charcfg)
+	{
+		styles += `
+		.player.char_${charid}{
+			background: url('/sprites/${char.sprite}.png') no-repeat;
+			background-size: 600%;
+			background-position: ${-char.xr*CELL_SIZE}px ${-char.yr*CELL_SIZE}px;
+		}
+		.player.char_${charid}.left{
+			background-position: ${-char.xl*CELL_SIZE}px ${-char.yl*CELL_SIZE}px;
+		}
+		`
+		charid++
 	}
 
 	document.querySelector('style.custom').innerHTML = styles;
@@ -111,11 +128,11 @@ function drawMap(center)
 			let o = getObjectAtCoord(x,y);
 			
 			if(rx==hvc && ry==hvc)
-				cls = 'me'
+				cls = 'player me char_'+player.char+' '+player.xdir
 			else if(o)
 			{
 				if(o.type=='user')
-					cls = 'enemy'
+					cls = 'player enemy char_'+o.char+' '+o.xdir
 				else cls = o.type
 			}
 			if(cls)
@@ -153,21 +170,32 @@ function move(dir)
 		try{
 			let d = await api('move',{player_id: PLAYER_ID, dir, stepnum: STEPNUM}) 
 			//cl('POS',d.pos)
+			let pos;
 			last_verified_stepnum = d.stepnum
 			if(d.inventory)
 			{
-				updInventory(d.inventory)
+				//updInventory(d.inventory) - updated in api()
 				if(d.objects_removed)
 					removeObjects(d.objects_removed)
 
 				pos = d.pos
-				drawMap(pos)
 			}
 			if(d.stepnum == STEPNUM && (pos[0] != d.pos[0] || pos[1] != d.pos[1]))
 			{
 				pos = d.pos
+			}
+
+			if(d.xdir)
+				player.xdir = d.xdir
+
+			if(pos)
+			{
+				player.x = pos[0]
+				player.y = pos[1]
 				drawMap(pos)
 			}
+			
+			
 		}
 		catch(e)
 		{
@@ -183,6 +211,9 @@ function move(dir)
 	if(p[1] < 0)p[1] = 0;
 	else if(p[1] >= H)p[1] = H-1;
 	
+	if(dir[0])
+		player.xdir = dir[0] < 0 ? "left" : "right"
+
 	if(!getObjectAtCoord(p[0],p[1]))
 	{
 		pos = p
@@ -281,9 +312,11 @@ async function initGame(board_id)
 	landscape = JSON.parse(res.landscape)
 	pos = res.mycrd
 	objects = res.objects
+	player = res.player
 	// res = await api("init_user")
 
 	objcfg = res.objcfg
+	charcfg = res.charcfg
 
 	res = await api("timesync")
 	timediff = res.time-Date.now()

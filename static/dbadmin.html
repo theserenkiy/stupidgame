@@ -72,7 +72,7 @@ async function send(ev)
 		if(ev)
 			ev.preventDefault()
 		let query = document.querySelector('form textarea').value.trim();
-		let mm = /((SELECT|DELETE)\s+.+?\s+FROM|UPDATE|INSERT\s+INTO)\s+\`?(.+?)\`?(\s|$)/.exec(query)
+		let mm = /((SELECT|DELETE)\s+.+?\s+FROM|UPDATE|INSERT\s+INTO|ALTER\s+TABLE)\s+\`?(.+?)\`?(\s|$)/.exec(query)
 		if(!mm)
 			throw "Incorrect query"
 

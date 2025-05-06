@@ -34,13 +34,13 @@ body>div{
 .object::before{
 	content: '';
 }
-.me::before{
+/* .me::before{
 	content: '웃';
 }
 .enemy::before{
 	content: '웃';
 	color: #e00;
-}
+} */
 .water::before{
 	content: '🍺';
 }
@@ -71,10 +71,6 @@ body>div{
 	content: '🔨';
 }
 
-
-.me::before{
-	content: '웃';
-}
 
 .inventory{
 	display: flex;

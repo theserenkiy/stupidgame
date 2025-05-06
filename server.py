@@ -6,11 +6,13 @@ import db
 import api
 import traceback
 import object
+import player
 
 from os import system
 system("title STUPIDGAME")
 
 object.compileCfg()
+player.compileChars()
 
 app = Flask(__name__,
 			static_url_path='', 

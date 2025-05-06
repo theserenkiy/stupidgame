@@ -10,7 +10,17 @@ import random
 INVENTORY_SLOTS = 10
 MAX_WEARING = 5
 
+char_sprites = {
+	"sprite2": {
+		"w": 960,
+        "h": 960,
+        "nx": 6,
+        "ny": 6,
+        "chars": 11 
+	}
+}
 
+chars = []
 
 def listPlayers():
 	res = [dict(p) for p in dbs.players.select("SELECT * FROM players")]
@@ -67,6 +77,10 @@ def move(player_id,dir):
 		upd.update({"x":p[0],"y":p[1]})
 	
 	upd["last_ping"] = lib.time_ms()
+	if dir[0] != 0:
+		upd["xdir"] = "left" if dir[0] < 0 else "right"
+		out["xdir"] = upd["xdir"]
+		
 	if len(upd.keys()):
 		dbs.players.c_updateId(upd, player_id)
 
@@ -212,7 +226,7 @@ def useObject(player_id, slotnum):
 			print("empty slot")
 			slot = empty_slot
 		slot["item"] = objtype
-		slot["type"] = cfg["group"]
+		slot["type"] = cfg["wear_type"]
 
 		upd["wearing"] = wear
 		ret["wearing"] = wear
@@ -221,21 +235,41 @@ def useObject(player_id, slotnum):
 	dbs.players.c_updateId(upd,player_id)
 	return ret
 
+def compileChars():
+	# chars = []
+	for sname in char_sprites:
+		spr = char_sprites[sname]
+		for i in range(spr["chars"]):
+			xr = i%6
+			yr = int(i/6)
+			chars.append({
+				"sprite": sname,
+				"xr": xr,
+				"yr": yr,
+				"xl": 5-xr,
+				"yl": yr+3
+			})
+
+
 def genPlayers(amount):
+	compileChars()
+	print(chars)
 	nicks = open("nicknames.txt").read().strip().split("\n")
 	for i in range(amount):
 		pl = [
 			random.randint(1000000,9999999),
-			random.choice(nicks)
+			random.choice(nicks),
+			random.randint(0,len(chars)-1)
 		]
 		print(pl)
 		dbs.players.insert({
 			"id":pl[0],
-			"name":pl[1]
+			"name":pl[1],
+			"char":pl[2]
 		})
 
 
 if __name__ == '__main__':
-	# genPlayers(10)
-	# listPlayers()
+	genPlayers(10)
+	listPlayers()
 	clearInventory(4962376)
