@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS Players (
 	char INT,
 	hp INT DEFAULT 100,
 	maxhp INT DEFAULT 100,
+	agility INT DEFAULT 20,
 	exp INT DEFAULT 0,
 	damage INT DEFAULT 2,
 	defence INT DEFAULT 0,

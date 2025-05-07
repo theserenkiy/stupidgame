@@ -11,7 +11,7 @@ let timediff = 0
 let objcfg = {}
 let charcfg = {}
 let player
-
+let inventory
 
 let popup_msg, popup_inv;
 
@@ -263,16 +263,14 @@ function initInventory()
 	}
 }
 
-async function useObject(slot)
+async function useObject(slotnum)
 {
-	let res = await api('use_object',{player_id:PLAYER_ID, slotnum: +slot.dataset.num})
-	// if(res.inventory)
-	// 	updInventory(res.inventory)
+	let res = await api('use_object',{player_id:PLAYER_ID, slotnum: +slotnum})
 }
 
-async function throwObject(slot)
+async function throwObject(slotnum)
 {
-	let res = await api('throw_object',{player_id:PLAYER_ID, slotnum: +slot.dataset.num})
+	let res = await api('throw_object',{player_id:PLAYER_ID, slotnum: +slotnum})
 }
 
 function initWearing()
@@ -285,23 +283,35 @@ function initWearing()
 	document.querySelector(".wearing").innerHTML = h
 }
 
-function invShowMenu(slot)
+function invShowMenu(slot_el)
 {
+	let slotnum = slot_el.dataset.num
+	let slot = inventory[slotnum]
+	cl({slot})
+	if(slot.type=="empty")
+	{
+		popup_inv.hide()
+		return
+	}
+	let obj = objcfg[slot["type"]]
 	let el = mkDiv(`
-	<button class="use">Использовать</button>
-	<button class="throw">Выбросить</button>
-	<a>Отмена</a>
+	<div class="info">
+		<div class="desc">${obj.desc}</div>
+	</div>
+	<a class="use">Использовать</a>
+	<a class="throw">Выбросить</a>
+	<a class="cancel">Отмена</a>
 	`)
 
 	el.querySelector('.use').onclick = () => {
-		useObject(slot)
+		useObject(slotnum)
 	}
 
 	el.querySelector('.throw').onclick = () => {
-		throwObject(slot)
+		throwObject(slotnum)
 	}
 
-	let rect = slot.getBoundingClientRect()
+	let rect = slot_el.getBoundingClientRect()
 	popup_inv.show(el,'',{
 		left: (rect.x+rect.width+4)+'px',
 		top: rect.y+'px'
@@ -316,6 +326,7 @@ function invHideMenu()
 
 function updInventory(inv)
 {
+	inventory = inv
 	let slots = [...document.querySelectorAll(".inventory > div")]
 	for(let i=0; i < slots.length; i++)
 	{

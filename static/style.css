@@ -116,7 +116,7 @@ body>div{
 	padding: 10px;
 	border: 1px solid #777;
 	border-radius: 4px;
-	background-color: #fff;
+	background-color: #ccc;
 	top: 0;
 	left: 0;
 	opacity: 0;
@@ -128,6 +128,30 @@ body>div{
 	flex-direction: column;
 	align-items: stretch;
 	justify-content: center;
+}
+
+.inv_context > div > a{
+	cursor: pointer;
+	display: inline-block;
+	padding: 10px 0;
+	--border-bottom: 1px solid #aaa;
+	text-align: center;
+	
+	--background-color: transparent;
+	border-radius: 10px;
+	transition: box-shadow 200ms, background-color 200ms;
+}
+
+.inv_context .info{
+	padding: 20px 0
+}
+.inv_context .info .desc{
+	font-family: "Times New Roman";
+	font-style: italic;
+}
+.inv_context > div > a:hover {
+	box-shadow: 0 0 30px #74d;
+	background-color: #cbf;
 }
 
 .inv_context.shown{
