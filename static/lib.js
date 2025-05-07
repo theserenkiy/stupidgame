@@ -30,3 +30,22 @@ function prepJson(v)
 {
 	return typeof v == 'string' ? JSON.parse(v) : v
 }
+
+function remClass(el,n)
+{
+	let rex = new RegExp("(\\s|^)"+n+"(\\s|$)",'g')
+	cl({rex})
+	el.className = el.className.replace(rex,' ').replace(/\s+/g,' ')
+}
+
+function delay(ms)
+{
+	return new Promise(s => setTimeout(s,ms))
+}
+
+function mkDiv(html)
+{
+	let el = document.createElement('DIV')
+	el.innerHTML = html
+	return el
+}

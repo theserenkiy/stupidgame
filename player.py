@@ -80,7 +80,7 @@ def move(player_id,dir):
 	if dir[0] != 0:
 		upd["xdir"] = "left" if dir[0] < 0 else "right"
 		out["xdir"] = upd["xdir"]
-		
+
 	if len(upd.keys()):
 		dbs.players.c_updateId(upd, player_id)
 
@@ -164,12 +164,33 @@ def clearInventory(id):
 def getPlayer(id):
 	return dbs.players.c_selectId(id)
 
-def useObject(player_id, slotnum):
+
+def throwObject(player_id,slotnum):
+	ret = {}
+	upd = {}
+	pl = dbs.players.c_selectId(player_id,["inventory"])
 	if slotnum < 0 or slotnum >= INVENTORY_SLOTS:
 		raise Exception("Slot out of range")
+	inv = prepareInventory(pl["inventory"])
+	slot = inv[slotnum]
+	if slot["type"] == "empty":
+		return ret
+	
+	slot["type"] = "empty"
+	slot["items"] = []
+	ret["inventory"] = inv
+	upd["inventory"] = inv
+
+	dbs.players.c_updateId(upd,player_id)
+	return ret
+	
+
+def useObject(player_id, slotnum):
 	ret = {}
 	upd = {}
 	pl = dbs.players.c_selectId(player_id,["inventory","wearing","hp","maxhp","damage","defence"])
+	if slotnum < 0 or slotnum >= INVENTORY_SLOTS:
+		raise Exception("Slot out of range")
 	inv = prepareInventory(pl["inventory"])
 	slot = inv[slotnum]
 	if slot["type"] == "empty":

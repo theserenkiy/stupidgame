@@ -94,7 +94,9 @@ def compileCfg():
 				cfg[cname] = cls
 				client_cfg[cname] = {
 					"desc": cls["desc"],
-					"icon": cls["icon"]
+					"icon": cls["icon"],
+					"group": cls["group"],
+					"wear_type": cls["wear_type"] if "wear_type" in cls else ""
 				}
 			
 		print(json.dumps(client_cfg,ensure_ascii=False))	

@@ -12,13 +12,16 @@ let objcfg = {}
 let charcfg = {}
 let player
 
+
+let popup_msg, popup_inv;
+
 async function api(cmd,data={})
 {
 	let res = await base_api(cmd,data)
 	if(res.game_error)
-		alert(res.game_error)
+		msg(res.game_error,1)
 	if(res.msg)
-		alert(res.msg)
+		msg(res.msg,1)
 	processServerResponse(res)
 	return res
 }
@@ -33,6 +36,19 @@ function processServerResponse(res)
 	if(d)
 		updWearing(prepJson(d))
 }
+
+
+function msg(s,error=0)
+{
+	popup_msg.show(s,error ? 'error' : '')
+}
+
+function hideMsg()
+{
+	popup_msg.hide(['error'])
+}
+
+
 
 function getServerTime()
 {
@@ -67,7 +83,8 @@ function initCss()
 		let c = objcfg[type]
 		styles += `
 		.object.${type}{
-			background: url('/sprites/${c.icon.sprite}.png') no-repeat;
+			background-image: url('/sprites/${c.icon.sprite}.png');
+			background-repeat: no-repeat;
 			background-size: 600%;
 		}
 		.map > div.object.${type}{
@@ -123,7 +140,7 @@ function drawMap(center)
 		for(let rx=0;rx < VISIBLE_CELLS;rx++)
 		{
 			let x = rx+dx;
-			let color = (x >= 0 && y >= 0 && x < W && y < H) ? `hsl(${landscape[x][y]} 40% 80%)` : '#fff'
+			let color = (x >= 0 && y >= 0 && x < W && y < H) ? `hsl(${landscape[x][y]} 40% 80%)` : 'transparent'
 			let cls = '';
 			let o = getObjectAtCoord(x,y);
 			
@@ -159,6 +176,7 @@ let lastmove = 0
 let last_verified_stepnum = 0
 function move(dir)
 {
+	hideMsg()
 	if(Date.now()-lastmove < 100)
 		return;
 	lastmove = Date.now() 
@@ -170,7 +188,7 @@ function move(dir)
 		try{
 			let d = await api('move',{player_id: PLAYER_ID, dir, stepnum: STEPNUM}) 
 			//cl('POS',d.pos)
-			let pos;
+			let newpos;
 			last_verified_stepnum = d.stepnum
 			if(d.inventory)
 			{
@@ -178,24 +196,23 @@ function move(dir)
 				if(d.objects_removed)
 					removeObjects(d.objects_removed)
 
-				pos = d.pos
+				newpos = d.pos
 			}
 			if(d.stepnum == STEPNUM && (pos[0] != d.pos[0] || pos[1] != d.pos[1]))
 			{
-				pos = d.pos
+				newpos = d.pos
 			}
 
 			if(d.xdir)
 				player.xdir = d.xdir
 
-			if(pos)
+			if(newpos)
 			{
+				pos = newpos
 				player.x = pos[0]
 				player.y = pos[1]
 				drawMap(pos)
 			}
-			
-			
 		}
 		catch(e)
 		{
@@ -223,7 +240,7 @@ function move(dir)
 
 function initInventory()
 {
-	document.onclick = ev => console.log('win click')
+	document.onclick = ev => invHideMenu()
 	h = ''
 	for(let i=0; i < INVENTORY_SLOTS; i++)
 	{
@@ -232,10 +249,11 @@ function initInventory()
 	document.querySelector(".inventory").innerHTML = h
 	for(let slot of [...document.querySelectorAll(".inventory .slot")])
 	{
-		slot.onclick = async () => {
-			res = await api('use_object',{player_id:PLAYER_ID, slotnum: +slot.dataset.num})
-			if(res.inventory)
-				updInventory(res.inventory)
+		slot.onclick = ev => {
+			ev.preventDefault()
+			ev.stopPropagation()
+			//useObject(slot)
+			invShowMenu(slot)
 		}
 		slot.oncontextmenu = ev => {
 			ev.preventDefault()
@@ -243,6 +261,18 @@ function initInventory()
 			invShowMenu(slot)
 		}
 	}
+}
+
+async function useObject(slot)
+{
+	let res = await api('use_object',{player_id:PLAYER_ID, slotnum: +slot.dataset.num})
+	// if(res.inventory)
+	// 	updInventory(res.inventory)
+}
+
+async function throwObject(slot)
+{
+	let res = await api('throw_object',{player_id:PLAYER_ID, slotnum: +slot.dataset.num})
 }
 
 function initWearing()
@@ -257,11 +287,31 @@ function initWearing()
 
 function invShowMenu(slot)
 {
+	let el = mkDiv(`
+	<button class="use">Использовать</button>
+	<button class="throw">Выбросить</button>
+	<a>Отмена</a>
+	`)
+
+	el.querySelector('.use').onclick = () => {
+		useObject(slot)
+	}
+
+	el.querySelector('.throw').onclick = () => {
+		throwObject(slot)
+	}
+
 	let rect = slot.getBoundingClientRect()
-	cl(rect)
-	let menu_el = document.querySelector('.inv_context');
-	menu_el.style.left = (rect.x+rect.width+4)+'px';
-	menu_el.style.top = rect.y+'px';
+	popup_inv.show(el,'',{
+		left: (rect.x+rect.width+4)+'px',
+		top: rect.y+'px'
+	})
+	
+}
+
+function invHideMenu()
+{
+	popup_inv.hide()
 }
 
 function updInventory(inv)
@@ -323,6 +373,10 @@ async function initGame(board_id)
 	cl({timediff})
 
 	initCss()
+
+
+	popup_msg = new Popup('.message')
+	popup_inv = new Popup('.inv_context')
 
 	drawMap(pos)
 	

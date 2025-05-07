@@ -1,3 +1,9 @@
+*{
+	font-family: Arial;
+}
+body{
+	background-color: #213;
+}
 body>div{
     display:flex;
 	flex-direction: column;
@@ -11,10 +17,34 @@ body>div{
 .view2{
     display:none;
 }
-.map_wrapper{
+.main{
 	display: flex;
 	align-items: center;
 	justify-content: center;
+}
+.map_wrapper{
+	position: relative;
+}
+.message{
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	bottom: 30px;
+	left: 30px;
+	right: 30px;
+	background-color: rgba(255,255,255,0.7);
+	padding: 20px;
+	border-radius: 5px;
+	box-shadow: 0 10px 10px rgba(0,0,0,0.4);
+	opacity: 0;
+	transition: opacity 300ms;
+}
+.message.shown{
+	opacity: 1;
+}
+.message.error{
+	background-color: rgba(255,100,100,0.7);
 }
 .map{
 	display: flex;
@@ -31,52 +61,10 @@ body>div{
 	border-left: 1px dotted #777; */
 }
 
-.object::before{
-	content: '';
-}
-/* .me::before{
-	content: '웃';
-}
-.enemy::before{
-	content: '웃';
-	color: #e00;
-} */
-.water::before{
-	content: '🍺';
-}
-.apple::before{
-	content: '🍎';
-}
-.axe::before{
-	content: '🪓';
-}
-
-.sword::before{
-	content: '🗡';
-}
-
-.shit::before{
-	content: '💩';
-}
-
-.knife::before{
-	content: '🔪';
-}
-
-.shield::before{
-	content: '🛡';
-}
-
-.hammer::before{
-	content: '🔨';
-}
-
 
 .inventory{
 	display: flex;
 	flex-wrap: wrap;
-	--height: 400px;
-	--border: 1px solid #777;
 	margin: 10px;
 }
 
@@ -90,6 +78,7 @@ body>div{
 	border: 1px solid #aaa;
 	border-radius: 4px;
 	cursor: pointer;
+	background-color: rgba(255,255,255,0.2);
 }
 
 .inventory > div:active{
@@ -117,15 +106,44 @@ body>div{
 }
 
 .inv_context{
-	display: none;
 	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
 	width: 250px;
 	height: 300px;
+	padding: 10px;
 	border: 1px solid #777;
 	border-radius: 4px;
 	background-color: #fff;
 	top: 0;
 	left: 0;
+	opacity: 0;
+	transition: opacity 300ms;
+}
+
+.inv_context > div{
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+}
+
+.inv_context.shown{
+	opacity: 1;
+}
+
+.inv_context > div > *{
+	margin: 4px 0;
+}
+
+.inv_context button{
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	background-color: #eee;
+	padding: 10px 20px;
+	cursor: pointer;
 }
 
 .bottom{

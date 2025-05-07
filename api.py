@@ -69,6 +69,9 @@ def heal(d):
 def use_object(d):
 	return player.useObject(d["player_id"],d["slotnum"])
 
+def throw_object(d):
+	return player.throwObject(d["player_id"],d["slotnum"])
+
 
 
 
