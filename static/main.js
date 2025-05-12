@@ -13,13 +13,17 @@ let charcfg = {}
 let player
 let inventory
 
+let stats = {
+	
+}
+
 let popup_msg, popup_inv;
 
 async function api(cmd,data={})
 {
 	let res = await base_api(cmd,data)
 	if(res.game_error)
-		msg(res.game_error,1)
+		msg(res.game_error,1,)
 	if(res.msg)
 		msg(res.msg,1)
 	processServerResponse(res)
@@ -293,14 +297,45 @@ function invShowMenu(slot_el)
 		popup_inv.hide()
 		return
 	}
-	let obj = objcfg[slot["type"]]
+	let o = objcfg[slot["type"]]
+
+	let stats = {}
+
+	if(o.heal)
+	{
+		stats.heal = `Лечит ${o.heal} HP за ${Math.round(o.delay/1000)} сек`
+	}
+	if(o.damage)
+	{
+		stats.damage = `Макс. урон: ${o.damage} HP за 1 удар`
+	}
+	if(o.speed)
+	{
+		stats.speed = `Скорость: ${(10/o.speed).toFixed(1)} сек на 1 удар`
+	}
+	if(o.agility)
+	{
+		stats.agility = `Ловкость: ${o.agility}`
+	}
+	if(o.stamina)
+	{
+		stats.stamina = `Выносливость: ${o.stamina}`
+	}
+
+	hstats = Object.entries(stats).map(v => `<div class="stat ${v[0]}">${v[1]}</div>`).join('\n')
+
 	let el = mkDiv(`
 	<div class="info">
-		<div class="desc">${obj.desc}</div>
+		<div class="desc">${o.desc}</div>
 	</div>
-	<a class="use">Использовать</a>
-	<a class="throw">Выбросить</a>
-	<a class="cancel">Отмена</a>
+	<div class="stats">
+		${hstats}
+	</div>
+	<div class="menu">
+		<a class="use">Использовать</a>
+		<a class="throw">Выбросить</a>
+		<a class="cancel">Отмена</a>
+	</div>
 	`)
 
 	el.querySelector('.use').onclick = () => {
@@ -386,7 +421,7 @@ async function initGame(board_id)
 	initCss()
 
 
-	popup_msg = new Popup('.message')
+	popup_msg = new Popup('.message',fadeout_ms=2000)
 	popup_inv = new Popup('.inv_context')
 
 	drawMap(pos)

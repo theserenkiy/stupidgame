@@ -5,11 +5,13 @@ class Popup
 	busy = 0
 	timeout = null
 
-	constructor(el_selector,transition_ms=300,display='flex')
+	constructor(el_selector,transition_ms=300,display='flex',fadeout_ms=0)
 	{
 		this.el = document.querySelector(el_selector)
 		this.transition = transition_ms
 		this.display = display
+		this.fadeout_ms = fadeout_ms
+		cl({el_selector, fadeout_ms})
 	}
 
 	remClass(name)
@@ -60,6 +62,18 @@ class Popup
 		this.el.className += ' shown'
 		this.shown = 1
 		this.busy = 0
+
+		if(this.fadeout_ms)
+			this.fadeout()
+	}
+
+	async fadeout()
+	{
+		cl("fadeout")
+		this.el.className += ' fadeout_transition'
+		this.remClass('shown')
+		await delay(this.fadeout_ms)
+		this.hide(['fadeout_transition'])
 	}
 
 	async hide(rem_classes=[])

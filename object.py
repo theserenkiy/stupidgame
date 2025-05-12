@@ -92,12 +92,9 @@ def compileCfg():
 			if cname in item_sprites:
 				cls["icon"] = item_sprites[cname]
 				cfg[cname] = cls
-				client_cfg[cname] = {
-					"desc": cls["desc"],
-					"icon": cls["icon"],
-					"group": cls["group"],
-					"wear_type": cls["wear_type"] if "wear_type" in cls else ""
-				}
+				client_cfg[cname] = cls
+				if "wear_type" not in cls:
+					client_cfg[cname]["wear_type"] = ""
 			
 		print(json.dumps(client_cfg,ensure_ascii=False))	
 

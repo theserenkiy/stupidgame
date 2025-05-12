@@ -33,7 +33,7 @@ function prepJson(v)
 
 function remClass(el,n)
 {
-	let rex = new RegExp("(\\s|^)"+n+"(\\s|$)",'g')
+	let rex = new RegExp("(\\s|^)"+n+"(?=\\s|$)",'g')
 	cl({rex})
 	el.className = el.className.replace(rex,' ').replace(/\s+/g,' ')
 }

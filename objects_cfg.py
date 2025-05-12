@@ -40,7 +40,8 @@ objcfg = {
 		"per_slot":	5,			# max items of name per slot
 		"resp": 100,			# respawn seconds
 		"heal": 20,			# hp add when used
-		"delay": 5000		# delay after use, before you can heal next time, ms
+		"delay": 5000,		# delay after use, before you can heal next time, ms
+        "desc": "Еда помогает восстановить здоровье в бою"
 	},
 
 	"axe":{
@@ -75,7 +76,7 @@ objcfg = {
 		"resp":	60,
 		"damage": 7,
 		"speed": 10,
-		"desc": "Ножик. Лучший аргумент в твою пользу в кулачном бою"
+		"desc": "Ножик. Лучший аргумент в кулачном бою"
 	},
 
 	"helmet": {
@@ -84,7 +85,7 @@ objcfg = {
 		"permap": 50,
 		"resp":	60,
 		"defense": 7,
-		"desc": "Шлем. Надежно защитит твою внутричерепную пустоту от побоев"
+		"desc": "Шлем. Защитит твою черепную полость от побоев"
 	},
     
 	"shield": {
@@ -115,6 +116,9 @@ objcfg = {
     "food_apple":{
 		"desc": "Натуральное яблочко с бабушкиной грядки, без ГМО и красителей, выращено с любовью",
 	},
+    "food_chocolate":{
+		"desc": "Кусок шоколадки, тает в руках а не во рту",
+	},
 	"food_water":{
 		"desc": "Вода из экологически чистых горных родников, повышает иммунитет, дарит заряд бодрости",
 		"heal": 0.66
@@ -127,7 +131,7 @@ objcfg = {
 		"damage": 1.5
 	},
 	"bat_spiked": {
-		"desc": "Дубина с шипами, убить не убьёт, но покалечит",
+		"desc": "Дубина с шипами, эффективно калечит но махать тяжело",
 		"damage": 1.5	
 	},
 	"bat_golf": {

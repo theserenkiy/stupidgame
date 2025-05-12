@@ -52,9 +52,12 @@ def move(player_id,dir):
 		
 		use_obj = 0
 		objtype = obj["type"]
-		inv = getInventory(player_id)
 
-		res = inventoryAdd(inv,objtype)
+		pl = dbs.players.c_selectId(player_id,['inventory','wearing'])
+		inv = prepareInventory(pl["inventory"])
+		wear = prepareWearing(pl["wearing"])
+
+		res = inventoryAdd(inv,wear,objtype)
 		if 'game_error' in res:
 			out.update(res)
 			p = p0
@@ -88,7 +91,7 @@ def move(player_id,dir):
 	return out
 
 
-def inventoryAdd(inv,objtype):
+def inventoryAdd(inv,wear,objtype,force=0):
 	print("inventoryAdd",objtype)
 	out = {}
 	ocfg = object.cfg[objtype]
@@ -111,6 +114,11 @@ def inventoryAdd(inv,objtype):
 			continue
 		found_slot = slot
 		break
+
+	if not force:
+		for slot in wear:
+			if "item" in slot and slot["item"] == objtype:
+				objs_of_type += 1
 
 	if objs_of_type >= ocfg["user_limit"]:
 		out["game_error"] = "Вы больше не можете поднять такой предмет"
@@ -192,6 +200,7 @@ def useObject(player_id, slotnum):
 	if slotnum < 0 or slotnum >= INVENTORY_SLOTS:
 		raise Exception("Slot out of range")
 	inv = prepareInventory(pl["inventory"])
+	wear = prepareWearing(pl["wearing"])
 	slot = inv[slotnum]
 	if slot["type"] == "empty":
 		return ret
@@ -219,8 +228,7 @@ def useObject(player_id, slotnum):
 				pl["hp"] = pl["maxhp"]
 
 	elif "wear_type" in cfg:
-		wear = prepareWearing(pl["wearing"])
-		
+	
 		same_type_slot = None
 		empty_slot = None
 		for i in range(MAX_WEARING):
@@ -240,7 +248,7 @@ def useObject(player_id, slotnum):
 
 		if same_type_slot:
 			print("same type slot")
-			inventoryAdd(inv,same_type_slot["item"])
+			inventoryAdd(inv,wear,same_type_slot["item"],force=1)
 			slot = same_type_slot
 			same_type_slot["item"] = objtype
 		elif empty_slot:

@@ -46,6 +46,11 @@ body>div{
 .message.error{
 	background-color: rgba(255,100,100,0.7);
 }
+.message.fadeout_transition{
+	transition: opacity 2000ms;
+}
+
+
 .map{
 	display: flex;
 	flex-wrap: wrap;
@@ -112,16 +117,22 @@ body>div{
 	align-items: stretch;
 	justify-content: center;
 	width: 250px;
-	height: 300px;
+	min-height: 200px;
+	height: auto;
 	padding: 10px;
 	border: 1px solid #777;
 	border-radius: 4px;
-	background-color: #ccc;
+	background-color: #eee;
 	top: 0;
 	left: 0;
 	opacity: 0;
 	transition: opacity 300ms;
 }
+
+.inv_context.shown{
+	opacity: 1;
+}
+
 
 .inv_context > div{
 	display: flex;
@@ -130,7 +141,22 @@ body>div{
 	justify-content: center;
 }
 
-.inv_context > div > a{
+.inv_context .menu{
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	justify-content: center;
+
+	margin-top: 20px;
+	padding: 10px 0;
+	border-top: 1px solid #777;
+}
+
+.inv_context .menu > *{
+	margin: 4px 0;
+}
+
+.inv_context .menu > a{
 	cursor: pointer;
 	display: inline-block;
 	padding: 10px 0;
@@ -142,32 +168,29 @@ body>div{
 	transition: box-shadow 200ms, background-color 200ms;
 }
 
+
+.inv_context .menu > a:hover {
+	box-shadow: 0 0 30px #74d;
+	background-color: #cbf;
+}
+
+
+
+
+.inv_context .menu button{
+	border: 1px solid #aaa;
+	border-radius: 4px;
+	background-color: #eee;
+	padding: 10px 20px;
+	cursor: pointer;
+}
+
 .inv_context .info{
 	padding: 20px 0
 }
 .inv_context .info .desc{
 	font-family: "Times New Roman";
 	font-style: italic;
-}
-.inv_context > div > a:hover {
-	box-shadow: 0 0 30px #74d;
-	background-color: #cbf;
-}
-
-.inv_context.shown{
-	opacity: 1;
-}
-
-.inv_context > div > *{
-	margin: 4px 0;
-}
-
-.inv_context button{
-	border: 1px solid #aaa;
-	border-radius: 4px;
-	background-color: #eee;
-	padding: 10px 20px;
-	cursor: pointer;
 }
 
 .bottom{
