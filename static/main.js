@@ -1,11 +1,8 @@
 let W = 100
 let H = 100
-const VISIBLE_CELLS = 11;
-const CELL_SIZE = 56;
 
-const INVENTORY_SLOTS = 10;
-const INVENTORY_CELL_SIZE = 80
-const WEARING_SLOTS = 5
+let cfg = {}
+
 let PLAYER_ID = 2623382
 let timediff = 0
 let objcfg = {}
@@ -61,23 +58,23 @@ function getServerTime()
 
 function initCss()
 {
-	let invm = Math.ceil(INVENTORY_CELL_SIZE/20)
-	let invw = 2*(INVENTORY_CELL_SIZE+invm+invm+2)
+	let invm = Math.ceil(cfg.inventory_cell_size/20)
+	let invw = 2*(cfg.inventory_cell_size+invm+invm+2)
 	let styles = `
 	.map {
-		width: ${VISIBLE_CELLS*(CELL_SIZE+1)}px;
+		width: ${cfg.board_visible_cells*(cfg.board_cell_size+1)}px;
 	}
 	.map > div {
-		width: ${CELL_SIZE}px;
-		height: ${CELL_SIZE}px;
-		font-size: ${Math.round(CELL_SIZE/2)}px;
+		width: ${cfg.board_cell_size}px;
+		height: ${cfg.board_cell_size}px;
+		font-size: ${Math.round(cfg.board_cell_size/2)}px;
 	}
 	.inventory {
 		width: ${invw}px;
 	}
 	.inventory > div, .wearing > div{
-		width: ${INVENTORY_CELL_SIZE}px;
-		height: ${INVENTORY_CELL_SIZE}px;
+		width: ${cfg.inventory_cell_size}px;
+		height: ${cfg.inventory_cell_size}px;
 		margin: ${invm}px;
 	}
 	`;
@@ -92,10 +89,10 @@ function initCss()
 			background-size: 600%;
 		}
 		.map > div.object.${type}{
-			background-position: ${-c.icon.x*CELL_SIZE}px ${-c.icon.y*CELL_SIZE}px;
+			background-position: ${-c.icon.x*cfg.board_cell_size}px ${-c.icon.y*cfg.board_cell_size}px;
 		}
 		.inventory > div.object.${type}, .wearing > div.object.${type}{
-			background-position: ${-c.icon.x*INVENTORY_CELL_SIZE}px ${-c.icon.y*INVENTORY_CELL_SIZE}px;
+			background-position: ${-c.icon.x*cfg.inventory_cell_size}px ${-c.icon.y*cfg.inventory_cell_size}px;
 		}
 		`
 	}
@@ -106,10 +103,10 @@ function initCss()
 		.player.char_${charid}{
 			background: url('/sprites/${char.sprite}.png') no-repeat;
 			background-size: 600%;
-			background-position: ${-char.xr*CELL_SIZE}px ${-char.yr*CELL_SIZE}px;
+			background-position: ${-char.xr*cfg.board_cell_size}px ${-char.yr*cfg.board_cell_size}px;
 		}
 		.player.char_${charid}.left{
-			background-position: ${-char.xl*CELL_SIZE}px ${-char.yl*CELL_SIZE}px;
+			background-position: ${-char.xl*cfg.board_cell_size}px ${-char.yl*cfg.board_cell_size}px;
 		}
 		`
 		charid++
@@ -135,13 +132,13 @@ function getObjectAtCoord(x,y)
 function drawMap(center)
 {
 	let h = ''
-	let hvc = Math.floor(VISIBLE_CELLS/2);
+	let hvc = Math.floor(cfg.board_visible_cells/2);
 	let dx = center[0]-hvc;
 	let dy = center[1]-hvc;
-	for(let ry=0;ry < VISIBLE_CELLS;ry++)
+	for(let ry=0;ry < cfg.board_visible_cells;ry++)
 	{
 		let y = ry+dy;
-		for(let rx=0;rx < VISIBLE_CELLS;rx++)
+		for(let rx=0;rx < cfg.board_visible_cells;rx++)
 		{
 			let x = rx+dx;
 			let color = (x >= 0 && y >= 0 && x < W && y < H) ? `hsl(${landscape[x][y]} 40% 80%)` : 'transparent'
@@ -246,7 +243,7 @@ function initInventory()
 {
 	document.onclick = ev => invHideMenu()
 	h = ''
-	for(let i=0; i < INVENTORY_SLOTS; i++)
+	for(let i=0; i < cfg.inventory_slots; i++)
 	{
 		h += `<div class="slot object" data-num="${i}" draggable="true"><div></div></div>`
 	}
@@ -280,7 +277,7 @@ async function throwObject(slotnum)
 function initWearing()
 {
 	h = ''
-	for(let i=0; i < WEARING_SLOTS; i++)
+	for(let i=0; i < cfg.wearing_slots; i++)
 	{
 		h += `<div class="slot object" data-num="${i}"></div>`
 	}
@@ -399,9 +396,6 @@ function removeObjects(ids)
 
 async function initGame(board_id)
 {
-	initInventory()
-	initWearing()
-
 	let res = await api("init_game",{board_id,player_id:PLAYER_ID})
 	W = res.w
 	H = res.h
@@ -409,17 +403,23 @@ async function initGame(board_id)
 	pos = res.mycrd
 	objects = res.objects
 	player = res.player
+	cfg = res.cfg
 	// res = await api("init_user")
 
 	objcfg = res.objcfg
 	charcfg = res.charcfg
 
+	initCss()
+	initInventory()
+	initWearing()
+
+	processServerResponse(res)
+
 	res = await api("timesync")
 	timediff = res.time-Date.now()
 	cl({timediff})
 
-	initCss()
-
+	
 
 	popup_msg = new Popup('.message',{fadeout_ms: 4000})
 	popup_inv = new Popup('.inv_context')

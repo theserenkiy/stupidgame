@@ -175,8 +175,6 @@ body>div{
 }
 
 
-
-
 .inv_context .menu button{
 	border: 1px solid #aaa;
 	border-radius: 4px;
@@ -200,4 +198,9 @@ body>div{
 
 .wearing{
 	display: flex;
+}
+
+.stats{
+	margin-left: 10px;
+	color: #fef;
 }

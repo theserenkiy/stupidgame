@@ -77,7 +77,7 @@ class Popup
 			this.fadeout(qnum)
 	}
 
-	async fadeout()
+	async fadeout(qnum)
 	{
 		cl("fadeout")
 		this.el.className += ' fadeout_transition'
@@ -91,19 +91,19 @@ class Popup
 
 	async hide(rem_classes=[])
 	{
-		cl('try hide')
+		//cl('try hide')
 		if(!this.shown && !this.busy)
 			return
-		cl('hide, wait busy')
+		//cl('hide, wait busy')
 		await this.waitBusy()
-		cl('ok')
+		//cl('ok')
 		if(!this.shown)
 			return
-		cl('do hide')
+		//cl('do hide')
 		this.busy = 1;
 		this.remClass('shown')
 
-		cl('await transition '+this.transition_ms)
+		//cl('await transition '+this.transition_ms)
 		await delay(this.transition_ms)
 		rem_classes.push('fadeout_transition')
 		for(let cls of rem_classes)

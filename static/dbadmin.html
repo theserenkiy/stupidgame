@@ -42,7 +42,7 @@ function getLastQueries()
 {
 	let list = JSON.parse(localStorage.lastQueries || '[]')
 	list.sort((a,b) => b[1]-a[1])
-	return list
+	return list.slice(0,10)
 }
 
 function updateLastQueries(lq)

@@ -7,8 +7,10 @@ import json
 import time
 import random
 
-INVENTORY_SLOTS = 10
-MAX_WEARING = 5
+from cfg import cfg
+
+INVENTORY_SLOTS = cfg["inventory_slots"]
+WEARING_SLOTS = cfg["wearing_slots"]
 
 char_sprites = {
 	"sprite2": {
@@ -153,7 +155,7 @@ def prepareInventory(rawinv):
 
 def prepareWearing(raw):
 	"""Takes wearing field from db, parses it and prepares to use"""
-	return prepareSlots(raw,MAX_WEARING)
+	return prepareSlots(raw,WEARING_SLOTS)
 
 def prepareSlots(raw,amount):
 	slots = json.loads(raw if raw else '[]') 
@@ -191,7 +193,13 @@ def throwObject(player_id,slotnum):
 
 	dbs.players.c_updateId(upd,player_id)
 	return ret
-	
+
+def recalcWearingStats(wear):
+	stats = {}
+	for slot in wear:
+		if "item" not in slot:
+			continue
+
 
 def useObject(player_id, slotnum):
 	ret = {}
@@ -231,7 +239,7 @@ def useObject(player_id, slotnum):
 	
 		same_type_slot = None
 		empty_slot = None
-		for i in range(MAX_WEARING):
+		for i in range(WEARING_SLOTS):
 			if not wear[i]:
 				wear[i] = {"type":"empty"}
 				
@@ -256,6 +264,8 @@ def useObject(player_id, slotnum):
 			slot = empty_slot
 		slot["item"] = objtype
 		slot["type"] = cfg["wear_type"]
+
+		recalcWearingStats(wear)
 
 		upd["wearing"] = wear
 		ret["wearing"] = wear

@@ -5,6 +5,7 @@ import player
 import lib
 import dbs
 import object
+from cfg import cfg
 from random import randint
 import json 
 
@@ -45,6 +46,7 @@ def init_game(d):
 	out["player"] = player.getPlayer(d['player_id'])
 	out["objcfg"] = object.client_cfg
 	out["charcfg"] = player.chars
+	out["cfg"] = cfg
 	return out
 
 def move(d):
