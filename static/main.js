@@ -1,7 +1,7 @@
 let W = 100
 let H = 100
 const VISIBLE_CELLS = 11;
-const CELL_SIZE = 64;
+const CELL_SIZE = 56;
 
 const INVENTORY_SLOTS = 10;
 const INVENTORY_CELL_SIZE = 80
@@ -180,7 +180,7 @@ let lastmove = 0
 let last_verified_stepnum = 0
 function move(dir)
 {
-	hideMsg()
+	//hideMsg()
 	if(Date.now()-lastmove < 100)
 		return;
 	lastmove = Date.now() 
@@ -421,7 +421,7 @@ async function initGame(board_id)
 	initCss()
 
 
-	popup_msg = new Popup('.message',fadeout_ms=2000)
+	popup_msg = new Popup('.message',{fadeout_ms: 4000})
 	popup_inv = new Popup('.inv_context')
 
 	drawMap(pos)

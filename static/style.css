@@ -47,7 +47,7 @@ body>div{
 	background-color: rgba(255,100,100,0.7);
 }
 .message.fadeout_transition{
-	transition: opacity 2000ms;
+	transition: opacity 4000ms;
 }
 
 
